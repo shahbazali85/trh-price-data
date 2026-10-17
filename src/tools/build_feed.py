@@ -27,7 +27,10 @@ for f in sorted((root / "pages").glob("*.html")):
     meta = {}
     for line in head.strip().splitlines():
         k, v = line.split(":", 1); meta[k.strip()] = v.strip()
+    import datetime as _dt
+    _v = _dt.date.fromisoformat(a.verified)
     for k in list(meta):
+        meta[k] = meta[k].replace("%%trh_month_year%%", _v.strftime("%B %Y")).replace("%%trh_year%%", "%%currentyear%%")
         if "[range]" in meta[k]:
             meta[k] = meta[k].replace("[range]", rng("family-meals"))
     meta["takeover"] = meta.get("takeover") == "true"

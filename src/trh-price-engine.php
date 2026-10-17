@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.1.1' );
+define( 'TRHPE_VERSION', '1.1.2' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -552,6 +552,52 @@ add_action( 'wpseo_register_extra_replacements', function () {
 	wpseo_register_var_replacement( '%%trh_updated%%', function () {
 		return do_shortcode( '[trh_updated]' );
 	}, 'advanced', 'Date prices were last verified' );
+} );
+
+/** Values for the custom variables (shared by front end and editor preview). */
+function trhpe_var_values() {
+	$m = trhpe_meta();
+	$d = $m['last_verified'] ? $m['last_verified'] : $m['last_import'];
+	return array(
+		'%%trh_month_year%%' => $d ? wp_date( 'F Y', strtotime( $d . ' 12:00:00' ) ) : wp_date( 'F Y' ),
+		'%%trh_year%%'       => wp_date( 'Y' ),
+		'%%trh_updated%%'    => $d ? wp_date( 'F j, Y', strtotime( $d . ' 12:00:00' ) ) : '',
+	);
+}
+
+/* Safety net: if Yoast ever outputs a raw %%trh_...%% variable, replace it before it reaches Google. */
+foreach ( array( 'wpseo_title', 'wpseo_metadesc', 'wpseo_opengraph_title', 'wpseo_opengraph_desc', 'wpseo_twitter_title', 'wpseo_twitter_description' ) as $trhpe_f ) {
+	add_filter( $trhpe_f, function ( $text ) {
+		return is_string( $text ) && false !== strpos( $text, '%%trh_' ) ? strtr( $text, trhpe_var_values() ) : $text;
+	}, 99 );
+}
+add_filter( 'wpseo_schema_webpage', function ( $data ) {
+	if ( isset( $data['name'] ) && is_string( $data['name'] ) && false !== strpos( $data['name'], '%%trh_' ) ) {
+		$data['name'] = strtr( $data['name'], trhpe_var_values() );
+	}
+	return $data;
+} );
+
+/* Yoast editor: make the Google preview show real values instead of %%trh_...%%. */
+add_action( 'admin_footer', function () {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( ! $screen || 'post' !== $screen->base || ! defined( 'WPSEO_VERSION' ) ) {
+		return;
+	}
+	?>
+	<script id="trhpe-yoast-vars">
+	(function () {
+		var vals = <?php echo wp_json_encode( trhpe_var_values() ); ?>;
+		function rep(t) { if (typeof t !== 'string') { return t; } Object.keys(vals).forEach(function (k) { t = t.split(k).join(vals[k]); }); return t; }
+		function boot() {
+			if (!window.YoastSEO || !YoastSEO.app || !YoastSEO.app.registerPlugin) { return; }
+			YoastSEO.app.registerPlugin('trhpeVars', { status: 'ready' });
+			['data_page_title', 'data_meta_desc'].forEach(function (f) { YoastSEO.app.registerModification(f, rep, 'trhpeVars', 10); });
+		}
+		if (window.YoastSEO && window.YoastSEO.app) { boot(); } else { window.addEventListener('YoastSEO:ready', boot); }
+	})();
+	</script>
+	<?php
 } );
 
 /* -------------------------------------------------------------------------

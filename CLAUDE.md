@@ -20,7 +20,7 @@ This repo is the data feed for **texasroadhouseusamenu.com** (owner: Shahbaz Ali
 ## Content rules
 - Few, useful pages (2–4 a month max). Each answers a real search question, starts with a 40–60 word direct answer, links official/news sources, and says it's an independent guide.
 - Never claim an offer is confirmed for this year without an official or news source dated this year. Use [trh_event] — it shows "not yet confirmed" until `confirmed = yes`.
-- Evergreen slugs without years. Year goes in titles via %%trh_year%% / %%trh_month_year%%.
+- Evergreen slugs without years. In seo_title/meta use Yoast's native %%currentyear%% for the year (the editor preview understands it). %%trh_month_year%% is replaced at build time with the verified month. Never leave %%trh_...%% in pages.json.
 - `takeover: true` lets a page overwrite an existing page the owner wrote (only works if the owner enabled it). Use only for full, better rewrites.
 
 ## Commit
