@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.3.0' );
+define( 'TRHPE_VERSION', '1.3.1' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -493,7 +493,7 @@ add_shortcode( 'trh_holiday_table', function ( $atts ) {
 		$h   .= '<time class="trh-hol__date" datetime="' . esc_attr( $d->format( 'Y-m-d' ) ) . '"><span class="m">' . esc_html( $d->format( 'M' ) ) . '</span><span class="d">' . esc_html( $d->format( 'j' ) ) . '</span><span class="w">' . esc_html( $d->format( 'D' ) ) . '</span></time>';
 		$h   .= '<div class="trh-hol__body"><span class="trh-hol__name">' . esc_html( $ev['name'] ) . '</span>';
 		if ( $next ) {
-			$h .= ' <span class="trh-next">Next · ' . esc_html( 0 === $days ? 'today' : ( 1 === $days ? 'tomorrow' : 'in ' . $days . ' days' ) ) . '</span>';
+			$h .= ' <span class="trh-next">Next · ' . trhpe_cd_span( $d, $days, 'in' ) . '</span>';
 		}
 		if ( $note ) {
 			$h .= '<span class="trh-hol__note">' . esc_html( $note ) . '</span>';
@@ -521,7 +521,7 @@ add_shortcode( 'trh_event', function ( $atts ) {
 	list( $cls, $pill, $note ) = trhpe_status_parts( $e['status'] );
 	$h  = '<div class="trh-event is-' . $cls . '">';
 	$h .= '<div class="trh-event__head"><time class="trh-hol__date" datetime="' . esc_attr( $d->format( 'Y-m-d' ) ) . '"><span class="m">' . esc_html( $d->format( 'M' ) ) . '</span><span class="d">' . esc_html( $d->format( 'j' ) ) . '</span><span class="w">' . esc_html( $d->format( 'D' ) ) . '</span></time>';
-	$h .= '<div><span class="trh-event__title">' . esc_html( $e['name'] . ' ' . $d->format( 'Y' ) ) . '</span><span class="trh-event__when">' . esc_html( $d->format( 'l, F j, Y' ) ) . ' · ' . esc_html( 0 === $days ? 'today' : ( 1 === $days ? 'tomorrow' : 'in ' . $days . ' days' ) ) . '</span></div>';
+	$h .= '<div><span class="trh-event__title">' . esc_html( $e['name'] . ' ' . $d->format( 'Y' ) ) . '</span><span class="trh-event__when">' . esc_html( $d->format( 'l, F j, Y' ) ) . ' · ' . trhpe_cd_span( $d, $days, 'in' ) . '</span></div>';
 	$h .= '<span class="trh-pill">' . esc_html( $pill ) . '</span></div>';
 	if ( $note ) {
 		$h .= '<p class="trh-event__note">' . esc_html( $note ) . '</p>';
@@ -538,9 +538,43 @@ add_shortcode( 'trh_event', function ( $atts ) {
 	return $h . '</div>';
 } );
 
+
+/** Countdown text that the browser keeps correct even when the page is cached. */
+function trhpe_cd_span( $d, $n, $style = 'in' ) {
+	$txt = 0 === $n ? 'today' : ( 1 === $n ? 'tomorrow' : ( 'away' === $style ? $n . ' days away' : 'in ' . $n . ' days' ) );
+	return '<span class="trh-cd" data-date="' . esc_attr( $d->format( 'Y-m-d' ) ) . '" data-style="' . esc_attr( $style ) . '">' . esc_html( $txt ) . '</span>';
+}
+add_action( 'wp_footer', function () {
+	echo "<script id=\"trhpe-cd\">(function(){var t=new Date();t.setHours(0,0,0,0);document.querySelectorAll('.trh-cd').forEach(function(e){var p=e.getAttribute('data-date').split('-'),d=new Date(+p[0],p[1]-1,+p[2]),n=Math.round((d-t)/864e5);if(n<0){return;}e.textContent=n===0?'today':n===1?'tomorrow':(e.getAttribute('data-style')==='away'?n+' days away':'in '+n+' days');});})();</script>";
+}, 30 );
+
+/* Holiday lists roll forward daily: purge page caches once a day (prices/dates untouched). */
+add_action( 'trhpe_daily_purge', function () {
+	if ( function_exists( 'rocket_clean_domain' ) ) { rocket_clean_domain(); }
+	if ( function_exists( 'w3tc_flush_all' ) ) { w3tc_flush_all(); }
+	if ( function_exists( 'wp_cache_clear_cache' ) ) { wp_cache_clear_cache(); }
+	if ( function_exists( 'sg_cachepress_purge_cache' ) ) { sg_cachepress_purge_cache(); }
+	do_action( 'litespeed_purge_all' );
+	do_action( 'breeze_clear_all_cache' );
+} );
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'trhpe_daily_purge' ) ) {
+		$midnight = ( new DateTimeImmutable( 'tomorrow 00:05', wp_timezone() ) )->getTimestamp();
+		wp_schedule_event( $midnight, 'daily', 'trhpe_daily_purge' );
+	}
+} );
+
 /** [trh_badge] — "✓ Prices checked Oct 17, 2026" pill for the top of a page. */
 add_shortcode( 'trh_badge', function () {
-	return '<p class="trh-checked"><span class="trh-checked__dot" aria-hidden="true">✓</span>' . esc_html( trhpe_checked_line() ) . '</p>';
+	$post   = get_post();
+	$prices = $post && preg_match( '/\[trh_(table|price|range)\b/', $post->post_content );
+	if ( $prices ) {
+		$text = trhpe_checked_line();
+	} else {
+		$d    = $post ? get_the_modified_date( 'M j, Y', $post ) : '';
+		$text = $d ? 'Checked and updated ' . $d : 'Checked and updated regularly';
+	}
+	return '<p class="trh-checked"><span class="trh-checked__dot" aria-hidden="true">✓</span>' . esc_html( $text ) . '</p>';
 } );
 
 /** [trh_updated] → date prices were last checked. format="F j, Y" */
@@ -592,7 +626,7 @@ add_shortcode( 'trh_countdown', function ( $atts ) {
 	$d     = trhpe_next_date( $ev[ $id ]['rule'] );
 	$today = new DateTimeImmutable( 'today', wp_timezone() );
 	$n     = (int) $today->diff( $d )->days;
-	return esc_html( 0 === $n ? 'today' : ( 1 === $n ? 'tomorrow' : $n . ' days away' ) );
+	return trhpe_cd_span( $d, $n, 'away' );
 } );
 
 
