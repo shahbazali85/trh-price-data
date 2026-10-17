@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.2.0' );
+define( 'TRHPE_VERSION', '1.2.1' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -565,7 +565,7 @@ add_shortcode( 'trh_year', function ( $atts ) {
 
 /** [trh_holiday id="thanksgiving" format="l, F j, Y" year="next|2027"] */
 add_shortcode( 'trh_holiday', function ( $atts ) {
-	$a  = shortcode_atts( array( 'id' => '', 'format' => 'l, F j, Y', 'year' => 'next', 'field' => 'date' ), $atts );
+	$a  = shortcode_atts( array( 'id' => '', 'format' => 'l, F j, Y', 'year' => 'next', 'field' => 'date', 'offset' => 0 ), $atts );
 	$ev = trhpe_events();
 	$id = sanitize_title( $a['id'] );
 	if ( ! isset( $ev[ $id ] ) ) {
@@ -575,6 +575,9 @@ add_shortcode( 'trh_holiday', function ( $atts ) {
 		return isset( $ev[ $id ][ $a['field'] ] ) ? wp_kses_post( $ev[ $id ][ $a['field'] ] ) : '';
 	}
 	$d = ( 'next' === $a['year'] ) ? trhpe_next_date( $ev[ $id ]['rule'] ) : trhpe_rule_date( $ev[ $id ]['rule'], (int) $a['year'] );
+	if ( $d && (int) $a['offset'] ) {
+		$d = $d->modify( sprintf( '%+d days', (int) $a['offset'] ) );
+	}
 	return $d ? esc_html( $d->format( $a['format'] ) ) : '';
 } );
 
