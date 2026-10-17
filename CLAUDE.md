@@ -1,6 +1,6 @@
 # trh-price-data — how to update this feed
 
-This repo is the data feed for **texasroadhouseusamenu.com** (owner: Shahbaz Ali). The site's WordPress plugin *TRH Price Engine* pulls `items.csv`, `events.csv`, `meta.json`, `pages.json` and `pages/*.html` from the repo root twice a day. Whatever is pushed to `main` goes live on the site within ~12 hours. The owner does not review each push, so accuracy is on you.
+This repo is the data feed for **texasroadhouseusamenu.com** (owner: Shahbaz Ali). The site's WordPress plugin *TRH Price Engine* pulls `items.csv`, `events.csv`, `meta.json`, `pages.json` and `pages/*.html` from the repo root every hour. Whatever is pushed to `main` goes live on the site within ~1 hour. The owner does not review each push, so accuracy is on you.
 
 ## Layout
 - `src/data/items.csv` — master prices. Columns: id,name,category,price,price_max,calories,serves,note,status,verified_on,sources,force

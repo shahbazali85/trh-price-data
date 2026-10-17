@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.1.0' );
+define( 'TRHPE_VERSION', '1.1.1' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -817,11 +817,17 @@ function trhpe_sync_pages_feed() {
 
 
 register_activation_hook( __FILE__, function () {
-	if ( ! wp_next_scheduled( 'trhpe_cron_sync' ) ) {
-		wp_schedule_event( time() + 300, 'twicedaily', 'trhpe_cron_sync' );
-	}
+	wp_clear_scheduled_hook( 'trhpe_cron_sync' );
+	wp_schedule_event( time() + 300, 'hourly', 'trhpe_cron_sync' );
 	if ( ! get_option( TRHPE_OPT_EVENTS ) ) {
 		update_option( TRHPE_OPT_EVENTS, trhpe_default_events(), false );
+	}
+} );
+add_action( 'init', function () {
+	if ( get_option( 'trhpe_sched' ) !== 'hourly' ) {
+		wp_clear_scheduled_hook( 'trhpe_cron_sync' );
+		wp_schedule_event( time() + 300, 'hourly', 'trhpe_cron_sync' );
+		update_option( 'trhpe_sched', 'hourly', false );
 	}
 } );
 register_deactivation_hook( __FILE__, function () {

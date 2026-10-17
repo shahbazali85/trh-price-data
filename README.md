@@ -1,6 +1,6 @@
 # TRH price data feed
 
-Data feed for **texasroadhouseusamenu.com**. The site's *TRH Price Engine* plugin reads this folder twice a day:
+Data feed for **texasroadhouseusamenu.com**. The site's *TRH Price Engine* plugin reads this folder every hour:
 
 | File | What it is |
 |---|---|
