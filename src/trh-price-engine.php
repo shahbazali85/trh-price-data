@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.1.2
+ * Version: 1.2.0
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.1.2' );
+define( 'TRHPE_VERSION', '1.2.0' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -380,11 +380,20 @@ add_shortcode( 'trh_range', function ( $atts ) {
 	return esc_html( $min === $max ? '$' . number_format( $min, 2 ) : '$' . number_format( $min, 2 ) . '–$' . number_format( $max, 2 ) );
 } );
 
-/** [trh_table category="appetizers" cols="name,price,calories" caption="..."] */
+/** Small "prices checked" line used under tables and in [trh_badge]. */
+function trhpe_checked_line() {
+	$d = do_shortcode( '[trh_updated format="M j, Y"]' );
+	return $d ? 'Typical U.S. prices · checked ' . $d . ' · may vary by location' : 'Typical U.S. prices · may vary by location';
+}
+
+/** [trh_table category="appetizers" cols="name,price" caption="..." footer="1"]
+ *  Item name with its note underneath, price right-aligned. Extra columns: calories, serves. */
 add_shortcode( 'trh_table', function ( $atts ) {
-	$a      = shortcode_atts( array( 'category' => '', 'ids' => '', 'cols' => 'name,price,note', 'caption' => '' ), $atts );
-	$labels = array( 'name' => 'Item', 'price' => 'Typical price', 'calories' => 'Calories', 'serves' => 'Serves', 'note' => 'Notes', 'status' => 'Status' );
-	$cols   = array_values( array_intersect( array_map( 'trim', explode( ',', $a['cols'] ) ), array_keys( $labels ) ) );
+	$a      = shortcode_atts( array( 'category' => '', 'ids' => '', 'cols' => 'name,price,note', 'caption' => '', 'footer' => '1' ), $atts );
+	$cols   = array_map( 'trim', explode( ',', $a['cols'] ) );
+	$extra  = array_values( array_intersect( $cols, array( 'calories', 'serves' ) ) );
+	$labels = array( 'calories' => 'Calories', 'serves' => 'Serves' );
+	$notes  = in_array( 'note', $cols, true );
 	$ids    = array_filter( array_map( 'sanitize_title', explode( ',', $a['ids'] ) ) );
 	$rows   = array();
 	foreach ( trhpe_items() as $it ) {
@@ -400,32 +409,138 @@ add_shortcode( 'trh_table', function ( $atts ) {
 	}
 	$GLOBALS['trhpe_tables_on_page'][] = array( 'category' => $a['category'], 'items' => $rows );
 
-	$h = '<div class="trh-table-wrap"><table class="trh-table">';
+	$h = '<div class="trh-menu"><table class="trh-table">';
 	if ( $a['caption'] ) {
 		$h .= '<caption>' . esc_html( $a['caption'] ) . '</caption>';
 	}
-	$h .= '<thead><tr>';
-	foreach ( $cols as $c ) {
-		$h .= '<th scope="col">' . esc_html( $labels[ $c ] ) . '</th>';
+	$h .= '<thead><tr><th scope="col" class="trh-c">Item</th>';
+	foreach ( $extra as $c ) {
+		$h .= '<th scope="col" class="trh-c trh-num">' . esc_html( $labels[ $c ] ) . '</th>';
 	}
-	$h .= '</tr></thead><tbody>';
+	$h .= '<th scope="col" class="trh-c trh-num">Price</th></tr></thead><tbody>';
 	foreach ( $rows as $it ) {
-		$h .= '<tr>';
-		foreach ( $cols as $c ) {
-			if ( 'price' === $c ) {
-				$v = trhpe_fmt_price( $it );
-				if ( 'seasonal' === $it['status'] ) {
-					$v .= ' (seasonal)';
-				}
-			} else {
-				$v = isset( $it[ $c ] ) ? $it[ $c ] : '';
-			}
-			$h .= ( 'name' === $c ? '<th scope="row">' : '<td>' ) . esc_html( '' === $v ? '—' : $v ) . ( 'name' === $c ? '</th>' : '</td>' );
+		$h .= '<tr><th scope="row" class="trh-c"><span class="trh-item">' . esc_html( $it['name'] ) . '</span>';
+		if ( $notes && '' !== $it['note'] ) {
+			$h .= '<span class="trh-note">' . esc_html( $it['note'] ) . '</span>';
 		}
-		$h .= '</tr>';
+		$h .= '</th>';
+		foreach ( $extra as $c ) {
+			$h .= '<td class="trh-c trh-num">' . esc_html( '' === $it[ $c ] ? '—' : $it[ $c ] ) . '</td>';
+		}
+		$tag = '';
+		if ( 'seasonal' === $it['status'] ) {
+			$tag = '<span class="trh-tag">seasonal</span>';
+		} elseif ( 'estimate' === $it['status'] ) {
+			$tag = '<span class="trh-tag" title="Estimate — sources differ or only one source">est.</span>';
+		}
+		$h .= '<td class="trh-c trh-num"><span class="trh-price">' . esc_html( trhpe_fmt_price( $it ) ) . '</span>' . $tag . '</td></tr>';
 	}
-	$h .= '</tbody></table></div>';
-	return $h;
+	$h .= '</tbody></table>';
+	if ( '0' !== $a['footer'] ) {
+		$h .= '<p class="trh-foot">' . esc_html( trhpe_checked_line() ) . '</p>';
+	}
+	return $h . '</div>';
+} );
+
+/** Split "Open — many locations close early" into a pill + note. */
+function trhpe_status_parts( $status ) {
+	$parts = preg_split( '/\s+[—–-]\s+/u', (string) $status, 2 );
+	$head  = trim( $parts[0] );
+	$note  = isset( $parts[1] ) ? trim( $parts[1] ) : '';
+	if ( stripos( $head, 'closed' ) === 0 ) {
+		return array( 'closed', 'Closed', $note );
+	}
+	if ( stripos( $head, 'open' ) === 0 ) {
+		return array( 'open', 'Open', $note );
+	}
+	return array( 'varies', 'Varies', $note ? $note : $head );
+}
+
+/** [trh_holiday_table limit="0"] — next 12 months as a date list with Open / Closed / Varies pills. */
+add_shortcode( 'trh_holiday_table', function ( $atts ) {
+	$a     = shortcode_atts( array( 'year' => 'rolling', 'limit' => 0 ), $atts );
+	$today = new DateTimeImmutable( 'today', wp_timezone() );
+	$rows  = array();
+	foreach ( trhpe_events() as $ev ) {
+		if ( 'rolling' === $a['year'] ) {
+			$d = trhpe_next_date( $ev['rule'] );
+		} else {
+			$y = ( 'current' === $a['year'] ) ? (int) $today->format( 'Y' ) : ( 'next' === $a['year'] ? (int) $today->format( 'Y' ) + 1 : (int) $a['year'] );
+			$d = trhpe_rule_date( $ev['rule'], $y );
+		}
+		if ( $d ) {
+			$rows[] = array( $d, $ev );
+		}
+	}
+	usort( $rows, function ( $x, $y ) {
+		return $x[0] <=> $y[0];
+	} );
+	if ( (int) $a['limit'] > 0 ) {
+		$rows = array_slice( $rows, 0, (int) $a['limit'] );
+	}
+	$h        = '<div class="trh-hol-wrap"><ol class="trh-hol">';
+	$lastyear = (int) $today->format( 'Y' );
+	foreach ( $rows as $i => $r ) {
+		list( $d, $ev ) = $r;
+		if ( (int) $d->format( 'Y' ) !== $lastyear ) {
+			$lastyear = (int) $d->format( 'Y' );
+			$h       .= '<li class="trh-hol__year" aria-hidden="true">' . esc_html( $lastyear ) . '</li>';
+		}
+		list( $cls, $pill, $note ) = trhpe_status_parts( $ev['status'] );
+		$days = (int) $today->diff( $d )->days;
+		$next = ( 0 === $i );
+		$h   .= '<li class="trh-hol__row is-' . $cls . ( $next ? ' is-next' : '' ) . '">';
+		$h   .= '<time class="trh-hol__date" datetime="' . esc_attr( $d->format( 'Y-m-d' ) ) . '"><span class="m">' . esc_html( $d->format( 'M' ) ) . '</span><span class="d">' . esc_html( $d->format( 'j' ) ) . '</span><span class="w">' . esc_html( $d->format( 'D' ) ) . '</span></time>';
+		$h   .= '<div class="trh-hol__body"><span class="trh-hol__name">' . esc_html( $ev['name'] ) . '</span>';
+		if ( $next ) {
+			$h .= ' <span class="trh-next">Next · ' . esc_html( 0 === $days ? 'today' : ( 1 === $days ? 'tomorrow' : 'in ' . $days . ' days' ) ) . '</span>';
+		}
+		if ( $note ) {
+			$h .= '<span class="trh-hol__note">' . esc_html( $note ) . '</span>';
+		}
+		if ( $ev['offer'] ) {
+			$h .= '<span class="trh-hol__offer">' . esc_html( $ev['offer'] ) . ( 'yes' === $ev['confirmed'] ? ' · confirmed' : ' · not yet confirmed for ' . $d->format( 'Y' ) ) . '</span>';
+		}
+		$h .= '</div><span class="trh-pill">' . esc_html( $pill ) . '</span></li>';
+	}
+	return $h . '</ol><p class="trh-foot">Hours are set by each restaurant — call ahead on holidays. Dates update automatically.</p></div>';
+} );
+
+/** [trh_event id="veterans-day"] — event card with date, countdown and confirmed / not-confirmed badge. */
+add_shortcode( 'trh_event', function ( $atts ) {
+	$a  = shortcode_atts( array( 'id' => '' ), $atts );
+	$ev = trhpe_events();
+	$id = sanitize_title( $a['id'] );
+	if ( ! isset( $ev[ $id ] ) ) {
+		return '';
+	}
+	$e     = $ev[ $id ];
+	$d     = trhpe_next_date( $e['rule'] );
+	$today = new DateTimeImmutable( 'today', wp_timezone() );
+	$days  = (int) $today->diff( $d )->days;
+	list( $cls, $pill, $note ) = trhpe_status_parts( $e['status'] );
+	$h  = '<div class="trh-event is-' . $cls . '">';
+	$h .= '<div class="trh-event__head"><time class="trh-hol__date" datetime="' . esc_attr( $d->format( 'Y-m-d' ) ) . '"><span class="m">' . esc_html( $d->format( 'M' ) ) . '</span><span class="d">' . esc_html( $d->format( 'j' ) ) . '</span><span class="w">' . esc_html( $d->format( 'D' ) ) . '</span></time>';
+	$h .= '<div><span class="trh-event__title">' . esc_html( $e['name'] . ' ' . $d->format( 'Y' ) ) . '</span><span class="trh-event__when">' . esc_html( $d->format( 'l, F j, Y' ) ) . ' · ' . esc_html( 0 === $days ? 'today' : ( 1 === $days ? 'tomorrow' : 'in ' . $days . ' days' ) ) . '</span></div>';
+	$h .= '<span class="trh-pill">' . esc_html( $pill ) . '</span></div>';
+	if ( $note ) {
+		$h .= '<p class="trh-event__note">' . esc_html( $note ) . '</p>';
+	}
+	if ( $e['offer'] ) {
+		$h .= '<p class="trh-event__offer"><strong>' . esc_html( $e['offer'] ) . '</strong> ' . ( 'yes' === $e['confirmed'] ? '<span class="trh-badge is-ok">Confirmed for ' . esc_html( $d->format( 'Y' ) ) . '</span>' : '<span class="trh-badge is-wait">Not yet confirmed for ' . esc_html( $d->format( 'Y' ) ) . '</span>' ) . '</p>';
+	}
+	if ( $e['details'] ) {
+		$h .= '<p class="trh-event__details">' . wp_kses_post( $e['details'] ) . '</p>';
+	}
+	if ( $e['url'] ) {
+		$h .= '<p class="trh-event__src"><a href="' . esc_url( $e['url'] ) . '" rel="nofollow noopener" target="_blank">Official source ↗</a></p>';
+	}
+	return $h . '</div>';
+} );
+
+/** [trh_badge] — "✓ Prices checked Oct 17, 2026" pill for the top of a page. */
+add_shortcode( 'trh_badge', function () {
+	return '<p class="trh-checked"><span class="trh-checked__dot" aria-hidden="true">✓</span>' . esc_html( trhpe_checked_line() ) . '</p>';
 } );
 
 /** [trh_updated] → date prices were last checked. format="F j, Y" */
@@ -477,59 +592,7 @@ add_shortcode( 'trh_countdown', function ( $atts ) {
 	return esc_html( 0 === $n ? 'today' : ( 1 === $n ? 'tomorrow' : $n . ' days away' ) );
 } );
 
-/** [trh_holiday_table year="current|next|2027"] — rolling 12-month table by default. */
-add_shortcode( 'trh_holiday_table', function ( $atts ) {
-	$a     = shortcode_atts( array( 'year' => 'rolling' ), $atts );
-	$today = new DateTimeImmutable( 'today', wp_timezone() );
-	$rows  = array();
-	foreach ( trhpe_events() as $ev ) {
-		if ( 'rolling' === $a['year'] ) {
-			$d = trhpe_next_date( $ev['rule'] );
-		} else {
-			$y = ( 'current' === $a['year'] ) ? (int) $today->format( 'Y' ) : ( 'next' === $a['year'] ? (int) $today->format( 'Y' ) + 1 : (int) $a['year'] );
-			$d = trhpe_rule_date( $ev['rule'], $y );
-		}
-		if ( $d ) {
-			$rows[] = array( $d, $ev );
-		}
-	}
-	usort( $rows, function ( $x, $y ) {
-		return $x[0] <=> $y[0];
-	} );
-	$h = '<div class="trh-table-wrap"><table class="trh-table trh-holidays"><thead><tr><th scope="col">Holiday</th><th scope="col">Date</th><th scope="col">Texas Roadhouse</th></tr></thead><tbody>';
-	foreach ( $rows as $r ) {
-		list( $d, $ev ) = $r;
-		$status = $ev['status'];
-		if ( $ev['offer'] ) {
-			$status .= ' · ' . $ev['offer'] . ( 'yes' === $ev['confirmed'] ? '' : ' (unconfirmed)' );
-		}
-		$h .= '<tr><th scope="row">' . esc_html( $ev['name'] ) . '</th><td>' . esc_html( $d->format( 'D, M j, Y' ) ) . '</td><td>' . esc_html( $status ) . '</td></tr>';
-	}
-	return $h . '</tbody></table></div>';
-} );
 
-/** [trh_event id="veterans-day"] — status box with confirmed / not-yet-confirmed wording. */
-add_shortcode( 'trh_event', function ( $atts ) {
-	$a  = shortcode_atts( array( 'id' => '' ), $atts );
-	$ev = trhpe_events();
-	$id = sanitize_title( $a['id'] );
-	if ( ! isset( $ev[ $id ] ) ) {
-		return '';
-	}
-	$e = $ev[ $id ];
-	$d = trhpe_next_date( $e['rule'] );
-	$h = '<div class="trh-event"><p><strong>' . esc_html( $e['name'] ) . ' ' . esc_html( $d->format( 'Y' ) ) . ':</strong> ' . esc_html( $d->format( 'l, F j' ) ) . ' — ' . esc_html( $e['status'] ) . '.</p>';
-	if ( $e['offer'] ) {
-		$h .= '<p><strong>Offer:</strong> ' . esc_html( $e['offer'] ) . ( 'yes' === $e['confirmed'] ? ' <span class="trh-ok">✔ confirmed</span>' : ' <span class="trh-wait">⏳ not yet confirmed for ' . esc_html( $d->format( 'Y' ) ) . '</span>' ) . '</p>';
-	}
-	if ( $e['details'] ) {
-		$h .= '<p>' . wp_kses_post( $e['details'] ) . '</p>';
-	}
-	if ( $e['url'] ) {
-		$h .= '<p><a href="' . esc_url( $e['url'] ) . '" rel="nofollow noopener" target="_blank">Official source</a></p>';
-	}
-	return $h . '</div>';
-} );
 
 /* -------------------------------------------------------------------------
  * 4. YOAST VARIABLES — titles & meta descriptions update themselves.
@@ -1058,6 +1121,7 @@ function trhpe_admin_page() {
 [trh_countdown id="veterans-day"]                 → 25 days away
 [trh_holiday_table]                               → next 12 months of holidays, open/closed
 [trh_event id="veterans-day"]                     → event box with confirmed / not-confirmed badge
+[trh_badge]                                       → "✓ Typical U.S. prices · checked Oct 17, 2026" pill
 Yoast title variables: %%trh_month_year%%  %%trh_year%%  %%trh_updated%%</pre>
 
 		<h2>Log</h2>
@@ -1083,5 +1147,57 @@ function trhpe_report_html( $r ) {
  * 10. Minimal front-end styles (mobile-friendly tables).
  * ---------------------------------------------------------------------- */
 add_action( 'wp_head', function () {
-	echo '<style id="trhpe-css">.trh-table-wrap{overflow-x:auto;margin:1em 0}.trh-table{width:100%;border-collapse:collapse;font-size:.95em}.trh-table th,.trh-table td{padding:.55em .7em;border-bottom:1px solid #e3e3e3;text-align:left;vertical-align:top}.trh-table thead th{background:#f6f3ee}.trh-table tbody th{font-weight:600}.trh-table caption{text-align:left;font-weight:600;padding:.4em 0}.trh-event{border-left:4px solid #b5121b;background:#fbf7f2;padding:.8em 1em;margin:1em 0}.trh-ok{color:#16793a;font-weight:600}.trh-wait{color:#9a6400;font-weight:600}</style>';
+	echo '<style id="trhpe-css">'
+		. ':root{--trh-red:#b5121b;--trh-ink:#1d1d1f;--trh-mute:#6b6b70;--trh-line:#e7e3dc;--trh-cream:#faf7f2;--trh-ok:#1f7a3a;--trh-okbg:#e8f5ec;--trh-no:#b42318;--trh-nobg:#fdecea;--trh-var:#8a5a00;--trh-varbg:#fff4dc}'
+		. '.trh-menu,.trh-hol-wrap{margin:1.4em 0 1.8em}'
+		. '.trh-menu .trh-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--trh-line);border-radius:12px;overflow:hidden;font-size:.97em;margin:0;table-layout:auto}'
+		. '.trh-menu .trh-table caption{caption-side:top;text-align:left;font-weight:700;padding:0 0 .5em;color:var(--trh-ink)}'
+		. '.trh-menu .trh-table th,.trh-menu .trh-table td{padding:.7em .9em;border:0;border-bottom:1px solid var(--trh-line);text-align:left;vertical-align:middle;background:transparent}'
+		. '.trh-menu .trh-table thead th{background:var(--trh-ink);color:#fff;font-size:.78em;letter-spacing:.06em;text-transform:uppercase;font-weight:700}'
+		. '.trh-menu .trh-table tbody tr:nth-child(even){background:var(--trh-cream)}'
+		. '.trh-menu .trh-table tbody tr:last-child>*{border-bottom:0}'
+		. '.trh-menu .trh-table tbody th{font-weight:600;color:var(--trh-ink)}'
+		. '.trh-menu .trh-table .trh-num{text-align:right;white-space:nowrap}'
+		. '.trh-item{display:block}.trh-note{display:block;font-weight:400;font-size:.82em;color:var(--trh-mute);margin-top:.15em;line-height:1.35}'
+		. '.trh-price{font-weight:700;color:var(--trh-red);font-variant-numeric:tabular-nums}'
+		. '.trh-tag{display:inline-block;margin-left:.35em;font-size:.7em;font-weight:600;color:var(--trh-mute);border:1px solid var(--trh-line);border-radius:999px;padding:0 .45em;vertical-align:middle}'
+		. '.trh-foot{font-size:.8em;color:var(--trh-mute);margin:.5em .2em 0}'
+		/* Defense: other plugins that inject widgets into table rows can't add columns. */
+		. '.trh-menu .trh-table tr>:not(.trh-c){display:none!important}'
+		. '.trh-hol-wrap .trh-hol{list-style:none;margin:0;padding:0;border:1px solid var(--trh-line);border-radius:12px;overflow:hidden}'
+		. '.trh-hol-wrap .trh-hol>li{margin:0}'
+		. '.trh-hol__year{background:var(--trh-ink);color:#fff;font-weight:700;font-size:.8em;letter-spacing:.08em;padding:.35em 1em}'
+		. '.trh-hol__row{display:flex;align-items:center;gap:.9em;padding:.75em 1em;border-bottom:1px solid var(--trh-line);background:#fff}'
+		. '.trh-hol__row:last-child{border-bottom:0}'
+		. '.trh-hol__row.is-next{background:var(--trh-cream);box-shadow:inset 4px 0 0 var(--trh-red)}'
+		. '.trh-hol__date{flex:0 0 3.4em;display:flex;flex-direction:column;align-items:center;border:1px solid var(--trh-line);border-radius:10px;background:#fff;line-height:1.1;padding:.3em 0;text-align:center}'
+		. '.trh-hol__date .m{font-size:.66em;font-weight:700;text-transform:uppercase;color:var(--trh-red);letter-spacing:.06em}'
+		. '.trh-hol__date .d{font-size:1.25em;font-weight:800;color:var(--trh-ink)}'
+		. '.trh-hol__date .w{font-size:.66em;color:var(--trh-mute)}'
+		. '.trh-hol__body{flex:1 1 auto;min-width:0}'
+		. '.trh-hol__name{font-weight:700;color:var(--trh-ink)}'
+		. '.trh-hol__note,.trh-hol__offer{display:block;font-size:.85em;color:var(--trh-mute);line-height:1.35;margin-top:.1em}'
+		. '.trh-hol__offer{color:var(--trh-var)}'
+		. '.trh-next{display:inline-block;font-size:.72em;font-weight:700;color:#fff;background:var(--trh-red);border-radius:999px;padding:.1em .55em;vertical-align:middle}'
+		. '.trh-pill{flex:0 0 auto;font-size:.78em;font-weight:700;border-radius:999px;padding:.25em .7em;white-space:nowrap}'
+		. '.is-open .trh-pill{color:var(--trh-ok);background:var(--trh-okbg)}.is-closed .trh-pill{color:var(--trh-no);background:var(--trh-nobg)}.is-varies .trh-pill{color:var(--trh-var);background:var(--trh-varbg)}'
+		. '.trh-event{border:1px solid var(--trh-line);border-radius:14px;background:var(--trh-cream);padding:1em 1.1em;margin:1.4em 0}'
+		. '.trh-event__head{display:flex;align-items:center;gap:.9em}.trh-event__head>div{flex:1 1 auto}'
+		. '.trh-event__title{display:block;font-weight:800;font-size:1.08em;color:var(--trh-ink)}'
+		. '.trh-event__when{display:block;font-size:.85em;color:var(--trh-mute)}'
+		. '.trh-event p{margin:.7em 0 0;font-size:.95em}'
+		. '.trh-badge{display:inline-block;font-size:.75em;font-weight:700;border-radius:999px;padding:.15em .6em;margin-left:.3em;vertical-align:middle}'
+		. '.trh-badge.is-ok{color:var(--trh-ok);background:var(--trh-okbg)}.trh-badge.is-wait{color:var(--trh-var);background:var(--trh-varbg)}'
+		. '.trh-event__src a{font-weight:600}'
+		. '.trh-checked{display:inline-flex;align-items:center;gap:.45em;font-size:.82em;color:var(--trh-ok);background:var(--trh-okbg);border-radius:999px;padding:.3em .85em;margin:0 0 1em}'
+		. '.trh-checked__dot{font-weight:800}'
+		. '.trh-answer{border-left:4px solid var(--trh-red);background:var(--trh-cream);border-radius:0 12px 12px 0;padding:.9em 1.1em;font-size:1.04em}'
+		. '.trh-sources{font-size:.82em;color:var(--trh-mute);border-top:1px solid var(--trh-line);padding-top:.8em;margin-top:2em}'
+		. '.wp-block-table.trh-core table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--trh-line);border-radius:12px;overflow:hidden}'
+		. '.wp-block-table.trh-core th,.wp-block-table.trh-core td{padding:.7em .9em;border:0;border-bottom:1px solid var(--trh-line);text-align:left}'
+		. '.wp-block-table.trh-core thead th{background:var(--trh-ink);color:#fff;font-size:.78em;letter-spacing:.06em;text-transform:uppercase}'
+		. '.wp-block-table.trh-core thead{border:0}.wp-block-table.trh-core tbody tr:nth-child(even){background:var(--trh-cream)}.wp-block-table.trh-core tbody tr:last-child>*{border-bottom:0}'
+		. '.wp-block-table.trh-core tr>:not(td):not(th){display:none!important}'
+		. '@media (max-width:600px){.trh-menu .trh-table{font-size:.92em}.trh-menu .trh-table th,.trh-menu .trh-table td{padding:.6em .65em}.trh-hol__row{gap:.65em;padding:.65em .75em}.trh-pill{font-size:.72em;padding:.2em .55em}}'
+		. '</style>';
 } );
