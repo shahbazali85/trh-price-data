@@ -26,10 +26,11 @@ This repo is the data feed for **texasroadhouseusamenu.com** (owner: Shahbaz Ali
 - `takeover: true` lets a page overwrite an existing page the owner wrote (only works if the owner enabled it). Use only for full, better rewrites.
 
 ## Page design (keep every page consistent)
-- Start the body with `[trh_badge]` in a wp:shortcode block, then the quick answer as `<!-- wp:paragraph {"className":"trh-answer"} --><p class="trh-answer"><strong>Quick answer:</strong> …</p>`.
+- Add `google-anno-skip` to the answer, sources and hand-made table classes (as below) so AdSense "Ad intents" links/chips stay out of key content.
+- Start the body with `[trh_badge]` in a wp:shortcode block, then the quick answer as `<!-- wp:paragraph {"className":"trh-answer google-anno-skip"} --><p class="trh-answer google-anno-skip"><strong>Quick answer:</strong> …</p>`.
 - Prices only via `[trh_table]` / `[trh_price]` / `[trh_range]`; holidays via `[trh_holiday_table]`; offers via `[trh_event]`.
-- Hand-made tables: `<!-- wp:table {"className":"trh-core"} -->` + `<figure class="wp-block-table trh-core">` (styled + protected from widget injection).
-- End with the sources paragraph: `<!-- wp:paragraph {"className":"trh-sources"} --><p class="trh-sources">Sources: … Independent guide — not affiliated with Texas Roadhouse.</p>`.
+- Hand-made tables: `<!-- wp:table {"className":"trh-core google-anno-skip"} -->` + `<figure class="wp-block-table trh-core google-anno-skip">` (styled + protected from widget injection).
+- End with the sources paragraph: `<!-- wp:paragraph {"className":"trh-sources google-anno-skip"} --><p class="trh-sources google-anno-skip">Sources: … Independent guide — not affiliated with Texas Roadhouse.</p>`.
 
 ## Commit
 Commit as Claude with the session attribution lines, push to `main`, then verify with WebFetch of the raw URL.

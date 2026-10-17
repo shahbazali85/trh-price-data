@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.3.1' );
+define( 'TRHPE_VERSION', '1.3.2' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -409,7 +409,7 @@ add_shortcode( 'trh_table', function ( $atts ) {
 	}
 	$GLOBALS['trhpe_tables_on_page'][] = array( 'category' => $a['category'], 'items' => $rows );
 
-	$h = '<div class="trh-menu"><table class="trh-table">';
+	$h = '<div class="trh-menu google-anno-skip"><table class="trh-table">';
 	if ( $a['caption'] ) {
 		$h .= '<caption>' . esc_html( $a['caption'] ) . '</caption>';
 	}
@@ -478,7 +478,7 @@ add_shortcode( 'trh_holiday_table', function ( $atts ) {
 	if ( (int) $a['limit'] > 0 ) {
 		$rows = array_slice( $rows, 0, (int) $a['limit'] );
 	}
-	$h        = '<div class="trh-hol-wrap"><ol class="trh-hol">';
+	$h        = '<div class="trh-hol-wrap google-anno-skip"><ol class="trh-hol">';
 	$lastyear = (int) $today->format( 'Y' );
 	foreach ( $rows as $i => $r ) {
 		list( $d, $ev ) = $r;
@@ -519,7 +519,7 @@ add_shortcode( 'trh_event', function ( $atts ) {
 	$today = new DateTimeImmutable( 'today', wp_timezone() );
 	$days  = (int) $today->diff( $d )->days;
 	list( $cls, $pill, $note ) = trhpe_status_parts( $e['status'] );
-	$h  = '<div class="trh-event is-' . $cls . '">';
+	$h  = '<div class="trh-event google-anno-skip is-' . $cls . '">';
 	$h .= '<div class="trh-event__head"><time class="trh-hol__date" datetime="' . esc_attr( $d->format( 'Y-m-d' ) ) . '"><span class="m">' . esc_html( $d->format( 'M' ) ) . '</span><span class="d">' . esc_html( $d->format( 'j' ) ) . '</span><span class="w">' . esc_html( $d->format( 'D' ) ) . '</span></time>';
 	$h .= '<div><span class="trh-event__title">' . esc_html( $e['name'] . ' ' . $d->format( 'Y' ) ) . '</span><span class="trh-event__when">' . esc_html( $d->format( 'l, F j, Y' ) ) . ' · ' . trhpe_cd_span( $d, $days, 'in' ) . '</span></div>';
 	$h .= '<span class="trh-pill">' . esc_html( $pill ) . '</span></div>';
@@ -574,7 +574,7 @@ add_shortcode( 'trh_badge', function () {
 		$d    = $post ? get_the_modified_date( 'M j, Y', $post ) : '';
 		$text = $d ? 'Checked and updated ' . $d : 'Checked and updated regularly';
 	}
-	return '<p class="trh-checked"><span class="trh-checked__dot" aria-hidden="true">✓</span>' . esc_html( $text ) . '</p>';
+	return '<p class="trh-checked google-anno-skip"><span class="trh-checked__dot" aria-hidden="true">✓</span>' . esc_html( $text ) . '</p>';
 } );
 
 /** [trh_updated] → date prices were last checked. format="F j, Y" */
