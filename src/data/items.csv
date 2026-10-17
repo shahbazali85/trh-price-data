@@ -1,0 +1,126 @@
+id,name,category,price,price_max,calories,serves,note,status,verified_on,sources,force
+cactus-blossom,Cactus Blossom,appetizers,8.99,,,,typical range $7.99–$11.99,crosschecked,2026-10-17,"A,B,C,D",1
+fried-pickles,Fried Pickles,appetizers,7.99,,,,typical range $6.99–$10.99,crosschecked,2026-10-17,"A,B,D",1
+rattlesnake-bites,Rattlesnake Bites,appetizers,8.49,,,,,estimate,,"B,D",1
+tater-skins,Tater Skins,appetizers,8.99,,,,,crosschecked,2026-10-17,"B,D",1
+grilled-shrimp-appetizer,Grilled Shrimp Appetizer,appetizers,7.99,,,,typical range $7.99–$8.49,crosschecked,2026-10-17,"A,B",1
+boneless-buffalo-wings,Boneless Buffalo Wings,appetizers,11.99,,,,typical range $9.99–$12.99,crosschecked,2026-10-17,"A,B,D",1
+cheese-fries,Cheese Fries,appetizers,10.99,,,,typical range $9.49–$12.99,crosschecked,2026-10-17,"A,B",1
+killer-ribs,Killer Ribs,appetizers,13.49,,,,typical range $7.99–$14.99,crosschecked,2026-10-17,"A,B",1
+combo-appetizer,Combo Appetizer,appetizers,13.99,,,,typical range $12.99–$15.99,crosschecked,2026-10-17,"A,B",1
+twisted-mozzarella,Twisted Mozzarella,appetizers,7.99,,,,,estimate,,B,1
+deviled-eggs,Deviled Eggs,appetizers,7.49,,,,typical range $7.49–$7.99; not at every location,crosschecked,2026-10-17,"A,B",1
+texas-red-chili-cup,Texas Red Chili (cup),appetizers,4.99,,,,,crosschecked,2026-10-17,"B,C,D",1
+hand-cut-sirloin-6-oz,Hand-Cut Sirloin (6 oz),steaks,14.49,,,,typical range $14.49–$15.99; starting price; larger cuts cost more,crosschecked,2026-10-17,"A,C",1
+new-york-strip,New York Strip,steaks,19.99,,,,typical range $18.99–$22.99,crosschecked,2026-10-17,"A,B",1
+dallas-filet,Dallas Filet,steaks,23.99,,,,typical range $22.99–$27.99; starting price (6 oz),crosschecked,2026-10-17,"A,B,C",1
+ft-worth-ribeye,Ft. Worth Ribeye,steaks,24.99,,,,typical range $22.99–$28.99; starting price (10–12 oz),crosschecked,2026-10-17,"A,B,C",1
+bone-in-ribeye,Bone-In Ribeye,steaks,32.99,,,,typical range $29.99–$38.99,crosschecked,2026-10-17,"A,B",1
+porterhouse-t-bone,Porterhouse T-Bone,steaks,35.99,,,,typical range $33.99–$40.99,crosschecked,2026-10-17,"A,B,C",1
+filet-medallions,Filet Medallions,steaks,24.99,,,,typical range $22.99–$29.99,crosschecked,2026-10-17,"A,B",1
+prime-rib,Prime Rib,steaks,24.49,29.49,,,weekends at many locations; may sell out,estimate,,"B,D",1
+road-kill,Road Kill,steaks,13.49,,,,,crosschecked,2026-10-17,"B,D",1
+steak-kabob,Steak Kabob,steaks,15.49,,,,,estimate,,B,1
+half-slab-ribs,Half Slab Ribs,ribs,19.99,,,,typical range $18.49–$21.99,crosschecked,2026-10-17,"A,B,D",1
+full-slab-ribs,Full Slab Ribs,ribs,25.99,,,,typical range $23.99–$27.99,crosschecked,2026-10-17,"A,B,C",1
+grilled-bbq-chicken-and-ribs,Grilled BBQ Chicken & Ribs,combos,23.49,,,,typical range $19.99–$24.99,crosschecked,2026-10-17,"A,B,D",1
+chicken-critters-and-ribs,Chicken Critters & Ribs,combos,18.99,,,,typical range $17.99–$21.99,crosschecked,2026-10-17,"A,B",1
+sirloin-and-ribs,Sirloin & Ribs,combos,22.99,,,,typical range $22.99–$25.99,crosschecked,2026-10-17,"A,B,D",1
+12-oz-ribeye-and-ribs,12 oz Ribeye & Ribs,combos,33.49,,,,typical range $29.99–$38.99,crosschecked,2026-10-17,"A,B",1
+6-oz-filet-and-ribs,6 oz Filet & Ribs,combos,31.99,,,,typical range $29.49–$36.99,crosschecked,2026-10-17,"A,B,D",1
+sirloin-and-grilled-shrimp,Sirloin & Grilled Shrimp,combos,20.99,,,,typical range $20.99–$23.99,crosschecked,2026-10-17,"A,B,D",1
+12-oz-ribeye-and-grilled-shrimp,12 oz Ribeye & Grilled Shrimp,combos,31.49,,,,typical range $28.99–$36.99,crosschecked,2026-10-17,"A,B",1
+6-oz-filet-and-grilled-shrimp,6 oz Filet & Grilled Shrimp,combos,30.49,,,,typical range $27.99–$34.99,crosschecked,2026-10-17,"A,B",1
+grilled-bbq-chicken-and-6-oz-sirloin,Grilled BBQ Chicken & 6 oz Sirloin,combos,22.99,,,,,crosschecked,2026-10-17,"B,D",1
+chicken-critters-and-6-oz-sirloin,Chicken Critters & 6 oz Sirloin,combos,20.99,,,,,estimate,,D,1
+grilled-salmon,Grilled Salmon,seafood,16.49,20.99,,,sources disagree; check your store,estimate,,"A,B,D",1
+fried-catfish,Fried Catfish,seafood,16.49,18.99,,,,crosschecked,2026-10-17,"A,B",1
+grilled-shrimp-9-pc,Grilled Shrimp (9 pc),seafood,17.99,,,,typical range $16.99–$19.99,crosschecked,2026-10-17,"A,B",1
+grilled-shrimp-12-pc,Grilled Shrimp (12 pc),seafood,20.99,,,,typical range $19.99–$22.99,crosschecked,2026-10-17,"A,B",1
+grilled-shrimp-alfredo-penne,Grilled Shrimp Alfredo Penne,seafood,18.99,,,,typical range $18.99–$20.99; select locations,crosschecked,2026-10-17,"A,E",1
+grilled-bbq-chicken,Grilled BBQ Chicken,chicken,14.49,,,,,crosschecked,2026-10-17,"A,B,C",1
+chicken-critters,Chicken Critters,chicken,15.49,,,,typical range $13.99–$18.99,crosschecked,2026-10-17,"A,B,C",1
+country-fried-chicken,Country Fried Chicken,chicken,16.49,,,,typical range $14.99–$19.99,crosschecked,2026-10-17,"A,B",1
+herb-crusted-chicken,Herb Crusted Chicken,chicken,16.49,,,,typical range $14.99–$19.99,crosschecked,2026-10-17,"A,B",1
+smothered-chicken,Smothered Chicken,chicken,16.49,,,,typical range $15.49–$19.99,crosschecked,2026-10-17,"A,B",1
+california-chicken,California Chicken,chicken,15.99,,,,typical range $15.99–$17.49,crosschecked,2026-10-17,"A,D",1
+portobello-mushroom-chicken,Portobello Mushroom Chicken,chicken,17.49,,,,typical range $15.99–$19.99,crosschecked,2026-10-17,"A,B",1
+chicken-alfredo-penne,Chicken Alfredo Penne,chicken,18.99,,,,typical range $16.99–$20.99; select locations,crosschecked,2026-10-17,"A,E",1
+grilled-pork-chops,Grilled Pork Chops,country-dinners,14.49,16.99,,,sources disagree,estimate,,"A,B",1
+pulled-pork-dinner,Pulled Pork Dinner,country-dinners,15.49,,,,typical range $13.99–$18.99,crosschecked,2026-10-17,"A,B",1
+country-fried-sirloin,Country Fried Sirloin,country-dinners,17.49,,,,typical range $15.99–$20.49,crosschecked,2026-10-17,"A,B",1
+beef-tips,Beef Tips,country-dinners,17.49,,,,typical range $15.99–$20.49,crosschecked,2026-10-17,"A,B,D",1
+country-vegetable-plate,Country Vegetable Plate,country-dinners,12.99,,,,typical range $11.99–$14.99,crosschecked,2026-10-17,"A,B",1
+all-american-cheeseburger,All-American Cheeseburger,burgers-sandwiches,12.49,,,,,crosschecked,2026-10-17,"A,B",1
+bacon-cheeseburger,Bacon Cheeseburger,burgers-sandwiches,13.99,,,,typical range $12.99–$16.99,crosschecked,2026-10-17,"A,B",1
+smokehouse-burger,Smokehouse Burger,burgers-sandwiches,13.99,,,,,estimate,,B,1
+grilled-or-fried-chicken-sandwich,Grilled or Fried Chicken Sandwich,burgers-sandwiches,13.49,,,,,crosschecked,2026-10-17,"A,E",1
+bbq-chicken-sandwich,BBQ Chicken Sandwich,burgers-sandwiches,13.49,,,,,crosschecked,2026-10-17,"A,B",1
+mushroom-jack-chicken-sandwich,Mushroom Jack Chicken Sandwich,burgers-sandwiches,14.49,,,,typical range $13.49–$16.99,crosschecked,2026-10-17,"A,B",1
+pulled-pork-sandwich,Pulled Pork Sandwich,burgers-sandwiches,13.49,,,,typical range $12.49–$16.99,crosschecked,2026-10-17,"A,B",1
+grilled-chicken-salad,Grilled Chicken Salad,salads,15.49,,,,typical range $13.99–$18.99,crosschecked,2026-10-17,"A,B",1
+chicken-caesar-salad,Chicken Caesar Salad,salads,15.49,,,,typical range $13.99–$18.99,crosschecked,2026-10-17,"A,B",1
+chicken-critter-salad,Chicken Critter Salad,salads,15.49,,,,typical range $13.99–$18.99,crosschecked,2026-10-17,"A,B",1
+california-chicken-salad,California Chicken Salad,salads,15.49,,,,typical range $15.49–$16.99,estimate,,A,1
+grilled-salmon-salad,Grilled Salmon Salad,salads,16.99,,,,typical range $15.99–$20.99,estimate,,A,1
+salmon-caesar-salad,Salmon Caesar Salad,salads,16.99,,,,typical range $15.99–$20.99,crosschecked,2026-10-17,"A,B",1
+steakhouse-filet-salad,Steakhouse Filet Salad,salads,17.99,,,,,estimate,,B,1
+house-salad-side,House Salad (side),salads,4.99,,,,,crosschecked,2026-10-17,"A,B,C",1
+caesar-salad-side,Caesar Salad (side),salads,4.99,,,,,crosschecked,2026-10-17,"A,B",1
+baked-potato,Baked Potato,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"A,B,C",1
+sweet-potato,Sweet Potato,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+mashed-potatoes,Mashed Potatoes,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"A,B,C",1
+steak-fries,Steak Fries,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+buttered-corn,Buttered Corn,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+seasoned-rice,Seasoned Rice,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+steamed-vegetables,Steamed Vegetables,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+steamed-broccoli,Steamed Broccoli,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+green-beans,Green Beans,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"A,B,C",1
+sauteed-onions,Sautéed Onions,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+sauteed-mushrooms,Sautéed Mushrooms,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"B,C",1
+applesauce,Applesauce,sides,3.49,,,,typical range $3.49–$3.99,crosschecked,2026-10-17,"A,B,C",1
+mac-and-cheese-side,Mac & Cheese (side),sides,4.48,,,,typical range $4.48–$4.98,crosschecked,2026-10-17,"A,B",1
+extra-rolls,Extra Rolls,sides,2.49,,,,,crosschecked,2026-10-17,"A,B",1
+extra-honey-cinnamon-butter,Extra Honey Cinnamon Butter,sides,1.99,,,,,crosschecked,2026-10-17,"A,B",1
+grilled-shrimp-sidekick,Grilled Shrimp Sidekick,sides,7.99,,,,typical range $7.99–$8.49,crosschecked,2026-10-17,"A,B",1
+sidekick-of-ribs,Sidekick of Ribs,sides,9.99,,,,,estimate,,B,1
+all-beef-hot-dog,All-Beef Hot Dog,kids,6.49,,,,,crosschecked,2026-10-17,"A,B",1
+macaroni-and-cheese,Macaroni and Cheese,kids,6.49,,,,typical range $5.49–$6.99,crosschecked,2026-10-17,"A,B",1
+mini-cheeseburgers,Mini-Cheeseburgers,kids,7.49,,,,,crosschecked,2026-10-17,"A,B",1
+jr-chicken-tenders,Jr. Chicken Tenders,kids,7.49,,,,typical range $6.99–$7.99,crosschecked,2026-10-17,"A,B",1
+kids-grilled-chicken,Kids Grilled Chicken,kids,7.49,,,,typical range $6.99–$7.99,crosschecked,2026-10-17,"A,B",1
+lil-dillo-steak-bites,Lil' Dillo Steak Bites,kids,8.49,,,,typical range $7.99–$8.99,crosschecked,2026-10-17,"A,B",1
+ranger-meal-chicken-critters-basket,Ranger Meal – Chicken Critters Basket,kids,10.99,,,,typical range $9.49–$10.99,estimate,,A,1
+ranger-meal-andys-steak,Ranger Meal – Andy's Steak,kids,11.99,,,,typical range $10.99–$13.99,estimate,,A,1
+grannys-apple-classic,Granny's Apple Classic,desserts,7.99,8.99,,,,crosschecked,2026-10-17,"A,B",1
+strawberry-cheesecake,Strawberry Cheesecake,desserts,7.99,8.99,,,,crosschecked,2026-10-17,"A,B",1
+big-ol-brownie,Big Ol' Brownie,desserts,7.99,8.99,,,,crosschecked,2026-10-17,"A,B",1
+family-sized-pork-chops,Family Sized Pork Chops,family-meals,39.99,,,about 4,typical range $29.99–$54.99,estimate,,A,1
+family-sized-cheeseburgers,Family Sized Cheeseburgers,family-meals,39.99,,,about 4,typical range $34.99–$44.99,crosschecked,2026-10-17,"A,B",1
+family-sized-bbq-chicken,Family Sized BBQ Chicken,family-meals,39.99,,,about 4,typical range $34.99–$49.99,crosschecked,2026-10-17,"A,B,D",1
+family-sized-grilled-chicken-salad,Family Sized Grilled Chicken Salad,family-meals,39.99,,,about 4,typical range $34.99–$49.99,estimate,,A,1
+family-sized-chicken-critters,Family Sized Chicken Critters,family-meals,44.99,,,about 4,typical range $39.99–$54.99,crosschecked,2026-10-17,"A,B",1
+family-sized-pulled-pork,Family Sized Pulled Pork,family-meals,44.99,,,about 4,typical range $39.99–$54.99,crosschecked,2026-10-17,"A,B",1
+family-sized-beef-tips,Family Sized Beef Tips,family-meals,49.99,,,about 4,typical range $44.99–$59.99,crosschecked,2026-10-17,"A,D",1
+family-sized-ribs,Family Sized Ribs,family-meals,59.99,,,about 4,,crosschecked,2026-10-17,"B,D",1
+family-sized-8-oz-strips,Family Sized 8 oz Strips,family-meals,64.99,,,about 4,typical range $59.99–$74.99,estimate,,A,1
+fountain-soft-drink-20-oz,Fountain Soft Drink (20 oz),drinks,1.99,,,,,crosschecked,2026-10-17,"A,B",1
+iced-tea-sweet-tea-20-oz,Iced Tea / Sweet Tea (20 oz),drinks,1.99,,,,,crosschecked,2026-10-17,"A,B",1
+lemonade-20-oz,Lemonade (20 oz),drinks,1.99,,,,,crosschecked,2026-10-17,"A,B",1
+flavored-lemonade-or-tea-20-oz,Flavored Lemonade or Tea (20 oz),drinks,2.49,,,,,estimate,,B,1
+bottled-water,Bottled Water,drinks,2.99,,,,,crosschecked,2026-10-17,"A,E",1
+half-gallon-tea-or-lemonade,Half Gallon Tea or Lemonade,drinks,3.49,,,,,crosschecked,2026-10-17,"A,B",1
+gallon-tea-or-lemonade,Gallon Tea or Lemonade,drinks,5.99,,,,,crosschecked,2026-10-17,"A,B",1
+early-dine-pulled-pork-dinner,Early Dine Pulled Pork Dinner,early-dine,9.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,"A,C",1
+early-dine-6-oz-sirloin,Early Dine 6 oz Sirloin,early-dine,10.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,"A,C",1
+early-dine-grilled-bbq-chicken,Early Dine Grilled BBQ Chicken,early-dine,11.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,A,1
+early-dine-country-fried-chicken,Early Dine Country Fried Chicken,early-dine,12.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,A,1
+early-dine-country-fried-sirloin,Early Dine Country Fried Sirloin,early-dine,13.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,A,1
+house-margarita,House Margarita,margaritas,7.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+original-margarita-10-oz,Original Margarita (10 oz),margaritas,8.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+strawberry-margarita,Strawberry Margarita,margaritas,8.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+mango-margarita,Mango Margarita,margaritas,8.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+peach-margarita,Peach Margarita,margaritas,8.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+raspberry-margarita,Raspberry Margarita,margaritas,8.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+sangria-margarita,Sangria Margarita,margaritas,9.49,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+the-legend-margarita,The Legend Margarita,margaritas,9.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1

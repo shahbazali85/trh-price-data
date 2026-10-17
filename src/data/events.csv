@@ -1,0 +1,18 @@
+id,name,rule,status,offer,details,url,confirmed
+new-years-day,New Year's Day,fixed:01-01,Open — hours vary by location,,,,
+mlk-day,Martin Luther King Jr. Day,nth:3:mon:1,Open — regular hours at most locations,,,,
+valentines-day,Valentine's Day,fixed:02-14,Open — expect long waits; join the app waitlist,,,,
+presidents-day,Presidents' Day,nth:3:mon:2,Open — regular hours at most locations,,,,
+easter,Easter Sunday,easter,Check your local restaurant,,,,
+mothers-day,Mother's Day,nth:2:sun:5,Open — one of the busiest days of the year,,,,
+memorial-day,Memorial Day,last:mon:5,Open — regular hours at most locations,,,,
+fathers-day,Father's Day,nth:3:sun:6,Open — one of the busiest days of the year,,,,
+july-4th,Independence Day,fixed:07-04,Open — hours may be shorter,,,,
+labor-day,Labor Day,nth:1:mon:9,Open — many locations open at 11 AM,,,,
+halloween,Halloween,fixed:10-31,Open — regular hours,,,,
+veterans-day,Veterans Day,fixed:11-11,Open,Free meal voucher for veterans & active-duty military (annual tradition),"In 2025 vouchers were handed out 11 AM–2 PM on Nov 11 with proof of service and could be redeemed through May 31, 2026. 2026 terms: not yet confirmed by Texas Roadhouse.",https://www.texasroadhouse.com,no
+thanksgiving,Thanksgiving Day,nth:4:thu:11,Closed,,,,
+black-friday,Black Friday,nth:4:thu:11+1,Open — regular hours,Holiday gift card bonus (check current terms),,,no
+christmas-eve,Christmas Eve,fixed:12-24,Open — many locations close early,,,,
+christmas-day,Christmas Day,fixed:12-25,Closed,,,,
+new-years-eve,New Year's Eve,fixed:12-31,Open — hours may be shorter,,,,
