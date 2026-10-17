@@ -9,6 +9,8 @@ This repo is the data feed for **texasroadhouseusamenu.com** (owner: Shahbaz Ali
 - `src/tools/build_feed.py` — builds the root feed: `python3 src/tools/build_feed.py . --verified YYYY-MM-DD`
 - `src/trh-price-engine.php` — plugin source; copy to `plugin/trh-price-engine/` and re-zip when changed.
 - Never edit root `items.csv`, `events.csv`, `pages/` by hand — edit `src/`, then build.
+- `src/redirects.json` — 301 redirects (from → to). The plugin only redirects once the target is published, and drops the old URL from the Yoast sitemap.
+- `src/sections.json` + `src/sections/*.html` — replace ONE H2 section (matched by heading text, up to the next H2) on an existing page. Use `requires` = slug that must be live first. Only for small, targeted fixes.
 
 ## Price rules
 - Sources legend is in README.md (A–E). Prefer sources that state a method (online-ordering menus, many stores). Ignore delivery-app prices (inflated).

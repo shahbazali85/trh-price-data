@@ -8,7 +8,7 @@ mothers-day,Mother's Day,nth:2:sun:5,Open — one of the busiest days of the yea
 memorial-day,Memorial Day,last:mon:5,Open — regular hours at most locations,,,,
 fathers-day,Father's Day,nth:3:sun:6,Open — one of the busiest days of the year,,,,
 july-4th,Independence Day,fixed:07-04,Open — hours may be shorter,,,,
-labor-day,Labor Day,nth:1:mon:9,Open — many locations open at 11 AM,,,,
+labor-day,Labor Day,nth:1:mon:9,Open — hours may differ from a normal Monday,,,,
 halloween,Halloween,fixed:10-31,Open — regular hours,,,,
 veterans-day,Veterans Day,fixed:11-11,Open,Free meal voucher for veterans & active-duty military (annual tradition),"In 2025 vouchers were handed out 11 AM–2 PM on Nov 11 with proof of service and could be redeemed through May 31, 2026. 2026 terms: not yet confirmed by Texas Roadhouse.",https://www.texasroadhouse.com,no
 thanksgiving,Thanksgiving Day,nth:4:thu:11,Closed,,,,

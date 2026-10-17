@@ -35,7 +35,16 @@ for f in sorted((root / "pages").glob("*.html")):
             meta[k] = meta[k].replace("[range]", rng("family-meals"))
     meta["takeover"] = meta.get("takeover") == "true"
     meta["file"] = f"pages/{meta['slug']}.html"
+    import re as _re
+    body = _re.sub(r"<table>.*?</table>", lambda m: _re.sub(r">\s+<", "><", m.group(0)), body, flags=_re.S)
     (out / meta["file"]).write_text(body.strip() + "\n", encoding="utf-8")
     pages.append(meta)
 json.dump(pages, open(out / "pages.json", "w"), indent=2, ensure_ascii=False)
+for extra in ("redirects.json", "sections.json"):
+    if (root / extra).exists():
+        shutil.copy(root / extra, out / extra)
+if (root / "sections").is_dir():
+    (out / "sections").mkdir(exist_ok=True)
+    for f in (root / "sections").glob("*.html"):
+        shutil.copy(f, out / "sections" / f.name)
 print(f"{len(items)} items, {len(pages)} pages → {out}")

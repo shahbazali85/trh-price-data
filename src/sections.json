@@ -1,0 +1,6 @@
+[
+  { "id": "specials-veterans", "slug": "texas-roadhouse-specials", "heading": "Military Discount and Veterans Day", "file": "sections/specials-veterans.html", "requires": "texas-roadhouse-veterans-day" },
+  { "id": "seo-lunch", "slug": "texas-roadhouse-lunch-menu", "meta": "Texas Roadhouse lunch menu with typical prices: which locations open for lunch, weekend lunch hours, Early Dine deals and the cheapest meals on the menu." },
+  { "id": "seo-catering", "slug": "texas-roadhouse-catering-menu-prices", "meta": "Texas Roadhouse catering menu with prices: party pans, sides by the quart, desserts, how far ahead to order, and when Family Meals are the cheaper choice." },
+  { "id": "seo-allergens", "slug": "texas-roadhouse-allergens-menu", "meta": "Texas Roadhouse allergen guide: which menu items contain milk, egg, wheat, soy, fish or shellfish, plus dairy-free and gluten-friendly picks. Always confirm with your server." }
+]

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.2.1
+ * Version: 1.3.0
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.2.1' );
+define( 'TRHPE_VERSION', '1.3.0' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -825,8 +825,173 @@ function trhpe_sync_from_feed() {
 	if ( ! empty( $s['feed_pages'] ) ) {
 		$out['pages'] = trhpe_sync_pages_feed();
 	}
+	trhpe_sync_redirects_feed();
+	$sec = trhpe_sync_sections_feed();
+	if ( $sec ) {
+		$out['pages'] = array_merge( isset( $out['pages'] ) ? (array) $out['pages'] : array(), $sec );
+	}
 	return $out;
 }
+/* -------------------------------------------------------------------------
+ * 7c. REDIRECTS + SECTION UPDATES from the feed
+ *     redirects.json = [ { "from": "/old-slug/", "to": "/new-slug/" } ]
+ *       → 301 only once the target is published; old URL leaves the Yoast sitemap.
+ *     sections.json  = [ { "id","slug","heading","file","requires" } ]
+ *       → replaces ONE H2 section (heading → next H2) of an existing page/post.
+ *         Needs "Allow takeover". Applied once per file version; old version stays in Revisions.
+ * ---------------------------------------------------------------------- */
+function trhpe_path( $url ) {
+	$p = wp_parse_url( $url, PHP_URL_PATH );
+	return '/' . trim( (string) $p, '/' ) . '/';
+}
+
+function trhpe_published_by_path( $path ) {
+	$id = url_to_postid( home_url( $path ) );
+	return ( $id && 'publish' === get_post_status( $id ) ) ? $id : 0;
+}
+
+function trhpe_sync_redirects_feed() {
+	$json = trhpe_fetch_csv( trhpe_feed_url( 'redirects.json' ) );
+	if ( is_wp_error( $json ) ) {
+		return;
+	}
+	$list = json_decode( $json, true );
+	if ( ! is_array( $list ) ) {
+		return;
+	}
+	$clean = array();
+	foreach ( $list as $r ) {
+		if ( ! empty( $r['from'] ) && ! empty( $r['to'] ) ) {
+			$clean[ trhpe_path( $r['from'] ) ] = trhpe_path( $r['to'] );
+		}
+	}
+	if ( $clean !== get_option( 'trhpe_redirects' ) ) {
+		update_option( 'trhpe_redirects', $clean, true );
+		trhpe_log( '[feed] redirects: ' . count( $clean ) . ' rules' );
+	}
+}
+
+add_action( 'template_redirect', function () {
+	$rules = get_option( 'trhpe_redirects', array() );
+	if ( ! $rules || is_admin() ) {
+		return;
+	}
+	$req = trhpe_path( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '' ); // phpcs:ignore
+	if ( isset( $rules[ $req ] ) && trhpe_published_by_path( $rules[ $req ] ) ) {
+		wp_safe_redirect( home_url( $rules[ $req ] ), 301, 'TRH Price Engine' );
+		exit;
+	}
+}, 1 );
+
+/* Keep redirected (old) URLs out of the Yoast sitemap once their redirect is active. */
+add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', function ( $ids ) {
+	foreach ( (array) get_option( 'trhpe_redirects', array() ) as $from => $to ) {
+		$old = url_to_postid( home_url( $from ) );
+		if ( $old && trhpe_published_by_path( $to ) ) {
+			$ids[] = $old;
+		}
+	}
+	return $ids;
+} );
+
+function trhpe_sync_sections_feed() {
+	$s = trhpe_settings();
+	if ( empty( $s['allow_takeover'] ) ) {
+		return array();
+	}
+	$json = trhpe_fetch_csv( trhpe_feed_url( 'sections.json' ) );
+	if ( is_wp_error( $json ) ) {
+		return array();
+	}
+	$list   = json_decode( $json, true );
+	$report = array();
+	foreach ( (array) $list as $row ) {
+		// SEO-only row: { "id", "slug", "seo_title"?, "meta"? } — updates Yoast fields of an existing page.
+		if ( ! empty( $row['id'] ) && ! empty( $row['slug'] ) && empty( $row['file'] ) && ( ! empty( $row['seo_title'] ) || ! empty( $row['meta'] ) ) ) {
+			$posts = get_posts( array( 'name' => sanitize_title( $row['slug'] ), 'post_type' => array( 'page', 'post' ), 'post_status' => 'publish', 'numberposts' => 1 ) );
+			if ( ! $posts ) {
+				continue;
+			}
+			$key  = '_trhpe_seo_' . sanitize_key( $row['id'] );
+			$hash = md5( wp_json_encode( $row ) );
+			if ( get_post_meta( $posts[0]->ID, $key, true ) === $hash ) {
+				continue;
+			}
+			if ( ! empty( $row['seo_title'] ) ) {
+				update_post_meta( $posts[0]->ID, '_yoast_wpseo_title', sanitize_text_field( $row['seo_title'] ) );
+			}
+			if ( ! empty( $row['meta'] ) ) {
+				update_post_meta( $posts[0]->ID, '_yoast_wpseo_metadesc', sanitize_text_field( $row['meta'] ) );
+			}
+			update_post_meta( $posts[0]->ID, $key, $hash );
+			$report[] = $row['id'] . ': SEO title/meta updated on /' . $posts[0]->post_name . '/';
+			continue;
+		}
+		if ( empty( $row['id'] ) || empty( $row['slug'] ) || empty( $row['heading'] ) || empty( $row['file'] ) || false !== strpos( $row['file'], '..' ) ) {
+			continue;
+		}
+		if ( ! empty( $row['requires'] ) && ! trhpe_published_by_path( '/' . $row['requires'] . '/' ) ) {
+			continue; // wait until the page it links to is live.
+		}
+		$posts = get_posts( array( 'name' => sanitize_title( $row['slug'] ), 'post_type' => array( 'page', 'post' ), 'post_status' => 'publish', 'numberposts' => 1 ) );
+		if ( ! $posts ) {
+			$report[] = $row['id'] . ': page not found';
+			continue;
+		}
+		$post = $posts[0];
+		$res  = wp_remote_get( trhpe_feed_url( $row['file'] ), array( 'timeout' => 20 ) );
+		if ( is_wp_error( $res ) || 200 !== wp_remote_retrieve_response_code( $res ) ) {
+			continue;
+		}
+		$html = trim( wp_remote_retrieve_body( $res ) );
+		$key  = '_trhpe_section_' . sanitize_key( $row['id'] );
+		if ( get_post_meta( $post->ID, $key, true ) === md5( $html ) ) {
+			continue;
+		}
+		$c = $post->post_content;
+		// Find the H2 whose text contains the heading.
+		if ( ! preg_match_all( '#<h2\b[^>]*>(.*?)</h2>#is', $c, $m, PREG_OFFSET_CAPTURE ) ) {
+			$report[] = $row['id'] . ': no H2 headings on page';
+			continue;
+		}
+		$start = -1;
+		$end   = strlen( $c );
+		foreach ( $m[0] as $i => $h ) {
+			if ( $start < 0 && false !== stripos( wp_strip_all_tags( $m[1][ $i ][0] ), $row['heading'] ) ) {
+				$start = $h[1];
+				if ( isset( $m[0][ $i + 1 ] ) ) {
+					$end = $m[0][ $i + 1 ][1];
+				}
+			}
+		}
+		if ( $start < 0 ) {
+			$report[] = $row['id'] . ': heading "' . $row['heading'] . '" not found';
+			continue;
+		}
+		// Step back to include the block comment that opens each heading.
+		$back = function ( $pos ) use ( $c ) {
+			$open = strrpos( substr( $c, 0, $pos ), '<!-- wp:heading' );
+			return ( false !== $open && '' === trim( preg_replace( '#^<!-- wp:heading[^>]*-->#', '', substr( $c, $open, $pos - $open ) ) ) ) ? $open : $pos;
+		};
+		$start = $back( $start );
+		if ( $end < strlen( $c ) ) {
+			$end = $back( $end );
+		}
+		$new = substr( $c, 0, $start ) . $html . "\n\n" . substr( $c, $end );
+		$ok  = wp_update_post( wp_slash( array( 'ID' => $post->ID, 'post_content' => $new ) ), true );
+		if ( is_wp_error( $ok ) ) {
+			$report[] = $row['id'] . ': ' . $ok->get_error_message();
+			continue;
+		}
+		update_post_meta( $post->ID, $key, md5( $html ) );
+		$report[] = $row['id'] . ': section updated on /' . $post->post_name . '/';
+	}
+	if ( $report ) {
+		trhpe_log( '[feed] sections — ' . implode( ' | ', $report ) );
+	}
+	return $report;
+}
+
 
 /**
  * pages.json = [ { "slug","type","title","seo_title","meta","focus","category","status","file","takeover","date" } ]
@@ -864,8 +1029,12 @@ function trhpe_sync_pages_feed() {
 			continue;
 		}
 		$hash     = md5( $html . wp_json_encode( $row ) );
-		$existing = get_posts( array( 'name' => $slug, 'post_type' => $type, 'post_status' => array( 'publish', 'draft', 'pending', 'future', 'private' ), 'numberposts' => 1 ) );
+		// Look for the slug as a post OR a page, so a type mismatch never creates a duplicate ("slug-2").
+		$existing = get_posts( array( 'name' => $slug, 'post_type' => array( 'post', 'page' ), 'post_status' => array( 'publish', 'draft', 'pending', 'future', 'private' ), 'numberposts' => 1 ) );
 		$post_id  = $existing ? $existing[0]->ID : 0;
+		if ( $existing ) {
+			$type = $existing[0]->post_type;
+		}
 		if ( $post_id ) {
 			$owned = get_post_meta( $post_id, '_trhpe_feed', true );
 			if ( ! $owned && ! ( ! empty( $s['allow_takeover'] ) && ! empty( $row['takeover'] ) ) ) {
