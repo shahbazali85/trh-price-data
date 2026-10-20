@@ -20,6 +20,18 @@ shutil.copy(root / "data/items.csv", out / "items.csv")
 shutil.copy(root / "data/events.csv", out / "events.csv")
 json.dump({"last_verified": a.verified, "stores_checked": a.stores}, open(out / "meta.json", "w"), indent=2)
 
+
+import re as _re0
+def _re_meta(text, items, v):
+    """Fill [price:id] and [verified] placeholders in titles/meta at build time."""
+    def price(m):
+        for i in items:
+            if i["id"] == m.group(1):
+                return "$" + i["price"]
+        sys.exit(f"unknown item id in meta: {m.group(1)}")
+    text = _re0.sub(r"\[price:([\w-]+)\]", price, text)
+    return text.replace("[verified]", v.strftime("%b %-d, %Y"))
+
 pages = []
 for f in sorted((root / "pages").glob("*.html")):
     raw = f.read_text(encoding="utf-8")
@@ -31,6 +43,7 @@ for f in sorted((root / "pages").glob("*.html")):
     _v = _dt.date.fromisoformat(a.verified)
     for k in list(meta):
         meta[k] = meta[k].replace("%%trh_month_year%%", _v.strftime("%B %Y")).replace("%%trh_year%%", "%%currentyear%%")
+        meta[k] = _re_meta(meta[k], items, _v)
         if "[range]" in meta[k]:
             meta[k] = meta[k].replace("[range]", rng("family-meals"))
     meta["takeover"] = meta.get("takeover") == "true"

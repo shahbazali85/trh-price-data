@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.3.2
+ * Version: 1.4.0
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.3.2' );
+define( 'TRHPE_VERSION', '1.4.0' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -564,6 +564,28 @@ add_action( 'init', function () {
 	}
 } );
 
+/** [trh_sum ids="a,b,c" qty="1,2,1"] → total of typical prices, e.g. "$31.97". Keeps example totals in sync with the data. */
+add_shortcode( 'trh_sum', function ( $atts ) {
+	$a   = shortcode_atts( array( 'ids' => '', 'qty' => '' ), $atts );
+	$ids = array_map( 'trim', explode( ',', $a['ids'] ) );
+	$qty = array_map( 'intval', array_filter( array_map( 'trim', explode( ',', $a['qty'] ) ), 'strlen' ) );
+	$sum = 0;
+	foreach ( $ids as $i => $id ) {
+		$it = trhpe_item( $id );
+		if ( ! $it ) {
+			return current_user_can( 'edit_posts' ) ? '<mark>[TRH: unknown item ' . esc_html( $id ) . ']</mark>' : '';
+		}
+		$sum += (float) $it['price'] * ( isset( $qty[ $i ] ) && $qty[ $i ] > 0 ? $qty[ $i ] : 1 );
+	}
+	return esc_html( '$' . number_format( $sum, 2 ) );
+} );
+
+/** [trh_print label="Print or save this menu as PDF"] */
+add_shortcode( 'trh_print', function ( $atts ) {
+	$a = shortcode_atts( array( 'label' => 'Print or save this menu as a PDF' ), $atts );
+	return '<p class="trh-print-wrap google-anno-skip"><button type="button" class="trh-print" onclick="window.print()">' . esc_html( $a['label'] ) . '</button></p>';
+} );
+
 /** [trh_badge] — "✓ Prices checked Oct 17, 2026" pill for the top of a page. */
 add_shortcode( 'trh_badge', function () {
 	$post   = get_post();
@@ -1046,6 +1068,16 @@ function trhpe_sync_pages_feed() {
 	}
 	$report = array();
 	foreach ( $list as $row ) {
+		$front = isset( $row['slug'] ) && '__front_page__' === $row['slug'];
+		if ( $front ) {
+			$fid  = (int) get_option( 'page_on_front' );
+			$fp   = $fid ? get_post( $fid ) : null;
+			if ( ! $fp ) {
+				$report[] = '__front_page__: site has no static front page — skipped';
+				continue;
+			}
+			$row['slug'] = $fp->post_name;
+		}
 		$slug = sanitize_title( isset( $row['slug'] ) ? $row['slug'] : '' );
 		$file = isset( $row['file'] ) ? ltrim( (string) $row['file'], '/' ) : '';
 		if ( '' === $slug || '' === $file || false !== strpos( $file, '..' ) ) {
@@ -1404,6 +1436,8 @@ add_action( 'wp_head', function () {
 		. '.wp-block-table.trh-core thead th{background:var(--trh-ink);color:#fff;font-size:.78em;letter-spacing:.06em;text-transform:uppercase}'
 		. '.wp-block-table.trh-core thead{border:0}.wp-block-table.trh-core tbody tr:nth-child(even){background:var(--trh-cream)}.wp-block-table.trh-core tbody tr:last-child>*{border-bottom:0}'
 		. '.wp-block-table.trh-core tr>:not(td):not(th){display:none!important}'
+		. '.trh-print{background:var(--trh-red);color:#fff;border:0;border-radius:999px;padding:.6em 1.2em;font-weight:700;cursor:pointer}.trh-print:hover{opacity:.9}'
+		. '@media print{header,footer,nav,aside,.site-header,.site-footer,.sidebar,.widget-area,.comments-area,.trh-print-wrap,ins,iframe{display:none!important}.trh-menu{break-inside:avoid}}'
 		. '@media (max-width:600px){.trh-menu .trh-table{font-size:.92em}.trh-menu .trh-table th,.trh-menu .trh-table td{padding:.6em .65em}.trh-hol__row{gap:.65em;padding:.65em .75em}.trh-pill{font-size:.72em;padding:.2em .55em}}'
 		. '</style>';
 } );
