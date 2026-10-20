@@ -35,6 +35,17 @@
   },
   {
     "type": "page",
+    "slug": "__front_page__",
+    "title": "Texas Roadhouse Menu with Prices (October 2026)",
+    "seo_title": "Texas Roadhouse Menu with Prices (October 2026): Every Item, Checked",
+    "meta": "Texas Roadhouse menu with prices for every item: steaks from $14.49, ribs, chicken, combos, sides, kids meals, Family Meals and drinks. Typical U.S. prices, checked Oct 17, 2026.",
+    "focus": "texas roadhouse menu with prices",
+    "status": "publish",
+    "takeover": true,
+    "file": "pages/__front_page__.html"
+  },
+  {
+    "type": "page",
     "slug": "texas-roadhouse-hours",
     "title": "Texas Roadhouse Hours Today & Holiday Hours",
     "seo_title": "Texas Roadhouse Hours Today + %%currentyear%% Holiday Hours (Open/Closed)",
