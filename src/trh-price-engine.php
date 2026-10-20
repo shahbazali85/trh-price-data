@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.4.0
+ * Version: 1.4.1
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.4.0' );
+define( 'TRHPE_VERSION', '1.4.1' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -839,7 +839,7 @@ add_action( 'trhpe_cron_sync', 'trhpe_sync_from_sheet' );
  * ---------------------------------------------------------------------- */
 function trhpe_feed_url( $file ) {
 	$s = trhpe_settings();
-	return trailingslashit( $s['feed_base_url'] ) . ltrim( $file, '/' ) . '?t=' . floor( time() / 600 );
+	return trailingslashit( $s['feed_base_url'] ) . ltrim( $file, '/' ) . '?t=' . time() . wp_rand( 100, 999 );
 }
 
 function trhpe_sync_from_feed() {
