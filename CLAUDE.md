@@ -20,6 +20,7 @@ This repo is the data feed for **texasroadhouseusamenu.com** (owner: Shahbaz Ali
 - Only numbers come from other sites. Never copy their wording.
 
 ## Content rules
+- Meta descriptions must be 70–158 characters (the build refuses longer ones; Bing flags >160).
 - Few, useful pages (2–4 a month max). Each answers a real search question, starts with a 40–60 word direct answer, links official/news sources, and says it's an independent guide.
 - Never claim an offer is confirmed for this year without an official or news source dated this year. Use [trh_event] — it shows "not yet confirmed" until `confirmed = yes`.
 - Evergreen slugs without years. In seo_title/meta use Yoast's native %%currentyear%% for the year (the editor preview understands it). %%trh_month_year%% is replaced at build time with the verified month. Never leave %%trh_...%% in pages.json.

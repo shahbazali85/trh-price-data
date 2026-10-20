@@ -52,6 +52,10 @@ for f in sorted((root / "pages").glob("*.html")):
     body = _re.sub(r"<table>.*?</table>", lambda m: _re.sub(r">\s+<", "><", m.group(0)), body, flags=_re.S)
     (out / meta["file"]).write_text(body.strip() + "\n", encoding="utf-8")
     pages.append(meta)
+_bad = [(p["slug"], len(p.get("meta", ""))) for p in pages if not 70 <= len(p.get("meta", "")) <= 158]
+_bad += [(r["slug"], len(r["meta"])) for r in json.load(open(root / "sections.json")) if "meta" in r and not 70 <= len(r["meta"]) <= 158] if (root / "sections.json").exists() else []
+if _bad:
+    sys.exit(f"Meta description must be 70–158 characters (Bing/Google limit): {_bad}")
 json.dump(pages, open(out / "pages.json", "w"), indent=2, ensure_ascii=False)
 for extra in ("redirects.json", "sections.json"):
     if (root / extra).exists():
