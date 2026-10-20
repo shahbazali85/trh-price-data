@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.4.1
+ * Version: 1.5.0
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.4.1' );
+define( 'TRHPE_VERSION', '1.5.0' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -56,7 +56,10 @@ function trhpe_settings() {
 		'feed_base_url'   => '',  // Folder URL that holds items.csv, events.csv, meta.json, pages.json (e.g. raw GitHub URL).
 		'feed_pages'      => 1,   // Create/update posts listed in pages.json.
 		'allow_takeover'  => 0,   // Let the feed overwrite EXISTING pages it did not create (only rows with "takeover": true).
-		'force_draft'     => 1,   // Ignore the feed's publish status and always save as draft.
+		'force_draft'     => 1,
+		'speed_fonts'     => 1,   // Load only the Google Font weights the theme uses, with display=optional (stops font layout shift).
+		'speed_delay_ads' => 0,   // Load the AdSense script after first scroll/tap (or 4 s). Off by default — may change ad revenue.
+		'speed_lcp'       => 1,   // Preload the featured image on single pages/posts (faster LCP).   // Ignore the feed's publish status and always save as draft.
 		'sheet_csv_url'   => '',  // Google Sheet "Publish to web" CSV link for the prices tab.
 		'events_csv_url'  => '',  // Optional second tab for events.
 		'max_change_pct'  => 30,  // Price moves bigger than this are held back unless force=1.
@@ -1268,6 +1271,9 @@ function trhpe_admin_page() {
 			$s['feed_pages']     = empty( $_POST['feed_pages'] ) ? 0 : 1;
 			$s['allow_takeover'] = empty( $_POST['allow_takeover'] ) ? 0 : 1;
 			$s['force_draft']    = empty( $_POST['force_draft'] ) ? 0 : 1;
+			$s['speed_fonts']     = empty( $_POST['speed_fonts'] ) ? 0 : 1;
+			$s['speed_lcp']       = empty( $_POST['speed_lcp'] ) ? 0 : 1;
+			$s['speed_delay_ads'] = empty( $_POST['speed_delay_ads'] ) ? 0 : 1;
 			$s['sheet_csv_url']  = esc_url_raw( wp_unslash( $_POST['sheet_csv_url'] ?? '' ) );
 			$s['events_csv_url'] = esc_url_raw( wp_unslash( $_POST['events_csv_url'] ?? '' ) );
 			$s['max_change_pct'] = max( 5, min( 100, (int) ( $_POST['max_change_pct'] ?? 30 ) ) );
@@ -1325,6 +1331,7 @@ function trhpe_admin_page() {
 				<tr><th>Restaurants checked</th><td><input type="text" class="large-text" name="stores_checked" value="<?php echo esc_attr( $meta['stores_checked'] ); ?>" placeholder="e.g. Louisville KY, Dallas TX, Phoenix AZ, Columbus OH, Tampa FL"></td></tr>
 				<tr><th>Hold back price jumps over</th><td><input type="number" name="max_change_pct" value="<?php echo (int) $s['max_change_pct']; ?>" min="5" max="100">%</td></tr>
 				<tr><th>Options</th><td><label><input type="checkbox" name="menu_schema" value="1" <?php checked( $s['menu_schema'] ); ?>> Output Menu JSON-LD</label><br><label><input type="checkbox" name="touch_modified" value="1" <?php checked( $s['touch_modified'] ); ?>> Update "modified" date of pages that use the data when prices change</label></td></tr>
+				<tr><th>Speed (Core Web Vitals)</th><td><label><input type="checkbox" name="speed_fonts" value="1" <?php checked( $s['speed_fonts'] ); ?>> Lighter Google Fonts (same fonts, 4 files instead of 36, no layout shift)</label><br><label><input type="checkbox" name="speed_lcp" value="1" <?php checked( $s['speed_lcp'] ); ?>> Preload the featured image (faster LCP)</label><br><label><input type="checkbox" name="speed_delay_ads" value="1" <?php checked( $s['speed_delay_ads'] ); ?>> Start AdSense after first scroll/tap or 4 s (faster page; watch ad revenue for a week)</label></td></tr>
 			</table>
 			<?php submit_button( 'Save settings' ); ?>
 		</form>
@@ -1380,6 +1387,65 @@ function trhpe_report_html( $r ) {
 	}
 	return $h;
 }
+
+
+/* -------------------------------------------------------------------------
+ * 11. SPEED (Core Web Vitals) — each part can be switched off in Tools → TRH Prices.
+ * ---------------------------------------------------------------------- */
+
+/* 11a. Fonts: GeneratePress requests 36 Roboto/Montserrat files with display=auto.
+ *      The theme only uses Roboto 400/700 (+ italic) and Montserrat 700. Same look, far fewer files,
+ *      and display=optional means text never re-flows when the font arrives (no CLS). */
+add_action( 'wp_enqueue_scripts', function () {
+	$s = trhpe_settings();
+	if ( empty( $s['speed_fonts'] ) ) {
+		return;
+	}
+	global $wp_styles;
+	$h = 'generate-google-fonts';
+	if ( ! isset( $wp_styles->registered[ $h ] ) ) {
+		return;
+	}
+	$src = (string) $wp_styles->registered[ $h ]->src;
+	// Only act on the font set we analysed; if the owner changes fonts in the Customizer, leave it alone.
+	if ( false === stripos( $src, 'Roboto' ) || false === stripos( $src, 'Montserrat' ) ) {
+		return;
+	}
+	wp_dequeue_style( $h );
+	wp_deregister_style( $h );
+	wp_enqueue_style( 'trhpe-fonts', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:ital,wght@0,400;0,700;1,400&display=optional', array(), null );
+}, 100 );
+
+/* 11b. LCP: preload the featured image that GeneratePress shows above the title. */
+add_action( 'wp_head', function () {
+	$s = trhpe_settings();
+	if ( empty( $s['speed_lcp'] ) || ! is_singular() || ! has_post_thumbnail() ) {
+		return;
+	}
+	$id = get_post_thumbnail_id();
+	$src = wp_get_attachment_image_src( $id, 'full' );
+	if ( ! $src ) {
+		return;
+	}
+	$srcset = wp_get_attachment_image_srcset( $id, 'full' );
+	echo '<link rel="preload" as="image" fetchpriority="high" href="' . esc_url( $src[0] ) . '"' . ( $srcset ? ' imagesrcset="' . esc_attr( $srcset ) . '" imagesizes="(max-width: 1280px) 100vw, 1280px"' : '' ) . ">\n";
+}, 2 );
+
+/* 11c. Optional: start AdSense after the first scroll/tap/mouse move, or after 4 seconds. */
+add_action( 'template_redirect', function () {
+	$s = trhpe_settings();
+	if ( empty( $s['speed_delay_ads'] ) || is_admin() || is_feed() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		return;
+	}
+	ob_start( function ( $html ) {
+		if ( false === strpos( $html, 'adsbygoogle.js' ) ) {
+			return $html;
+		}
+		$html = preg_replace( '#<script([^>]*)\ssrc=(["\'])(https://pagead2\.googlesyndication\.com/pagead/js/adsbygoogle\.js[^"\']*)\2([^>]*)></script>#i', '<script type="text/trh-delayed" data-src="$3"></script>', $html, 1 );
+		$js = "<script id=\"trhpe-ads\">(function(){var d=false;function go(){if(d)return;d=true;var o=document.querySelector('script[type=\"text/trh-delayed\"]');if(!o)return;var s=document.createElement('script');s.async=true;s.src=o.getAttribute('data-src');s.crossOrigin='anonymous';document.head.appendChild(s);}['scroll','touchstart','mousemove','keydown','click'].forEach(function(e){window.addEventListener(e,go,{once:true,passive:true});});setTimeout(go,4000);})();</script>";
+		return str_replace( '</body>', $js . '</body>', $html );
+	} );
+}, 1 );
 
 /* -------------------------------------------------------------------------
  * 10. Minimal front-end styles (mobile-friendly tables).
