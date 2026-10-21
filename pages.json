@@ -41,7 +41,7 @@
     "meta": "Texas Roadhouse gift card deal: a $10 bonus card for every $50, online only, in short promo windows. Holiday deal status and how to check your balance.",
     "focus": "texas roadhouse gift card",
     "category": "Chain Update",
-    "status": "draft",
+    "status": "publish",
     "takeover": false,
     "file": "pages/texas-roadhouse-gift-card.html"
   },
@@ -87,7 +87,7 @@
     "meta": "Add steaks, ribs, sides, kids meals and drinks to see your Texas Roadhouse total with tax, tip and cost per person. Uses typical U.S. menu prices.",
     "focus": "texas roadhouse meal cost calculator",
     "category": "Chain Update",
-    "status": "draft",
+    "status": "publish",
     "takeover": false,
     "file": "pages/texas-roadhouse-meal-cost-calculator.html"
   },
