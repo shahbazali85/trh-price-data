@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.6.0
+ * Version: 1.7.0
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.6.0' );
+define( 'TRHPE_VERSION', '1.7.0' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -583,6 +583,42 @@ add_shortcode( 'trh_sum', function ( $atts ) {
 		$sum += (float) $it['price'] * ( isset( $qty[ $i ] ) && $qty[ $i ] > 0 ? $qty[ $i ] : 1 );
 	}
 	return esc_html( '$' . number_format( $sum, 2 ) );
+} );
+
+/** [trh_builder people="4" tax="8" tip="18"] — meal cost calculator. Prices come from the live feed, so it never goes stale.
+ *  Works without JS as a plain price list (crawlable); JS adds +/- buttons, tax, tip and per-person totals. No external requests. */
+add_shortcode( 'trh_builder', function ( $atts ) {
+	$a = shortcode_atts( array( 'people' => 4, 'tax' => 8, 'tip' => 18, 'cats' => 'steaks,ribs,combos,chicken,seafood,country-dinners,burgers-sandwiches,salads,appetizers,sides,kids,early-dine,family-meals,desserts,drinks' ), $atts );
+	$labels = array( 'steaks' => 'Hand-cut steaks', 'ribs' => 'Ribs', 'combos' => 'Combos', 'chicken' => 'Chicken', 'seafood' => 'Seafood', 'country-dinners' => 'Country dinners', 'burgers-sandwiches' => 'Burgers & sandwiches', 'salads' => 'Salads', 'appetizers' => 'Appetizers', 'sides' => 'Sides & extras', 'kids' => 'Kids', 'early-dine' => 'Early Dine (weekday afternoons)', 'family-meals' => 'Family Meals (to-go)', 'desserts' => 'Desserts', 'drinks' => 'Drinks', 'margaritas' => 'Margaritas (21+)' );
+	$by = array();
+	foreach ( trhpe_items() as $it ) {
+		if ( 'discontinued' === ( $it['status'] ?? '' ) || (float) $it['price'] <= 0 ) {
+			continue;
+		}
+		$by[ $it['category'] ][] = $it;
+	}
+	$h  = '<div class="trh-builder google-anno-skip" data-tax="' . esc_attr( (float) $a['tax'] ) . '" data-tip="' . esc_attr( (float) $a['tip'] ) . '">';
+	foreach ( array_filter( array_map( 'sanitize_title', explode( ',', $a['cats'] ) ) ) as $c ) {
+		if ( empty( $by[ $c ] ) ) {
+			continue;
+		}
+		$h .= '<details class="trh-b-cat"' . ( in_array( $c, array( 'steaks', 'sides' ), true ) ? ' open' : '' ) . '><summary>' . esc_html( $labels[ $c ] ?? ucwords( str_replace( '-', ' ', $c ) ) ) . ' <span>(' . count( $by[ $c ] ) . ')</span></summary><ul>';
+		foreach ( $by[ $c ] as $it ) {
+			$p  = (float) $it['price'];
+			$h .= '<li data-p="' . esc_attr( number_format( $p, 2, '.', '' ) ) . '"><span class="n">' . esc_html( $it['name'] ) . '</span><span class="p">$' . esc_html( number_format( $p, 2 ) ) . '</span><span class="q"><button type="button" class="m" aria-label="Remove one ' . esc_attr( $it['name'] ) . '">−</button><output>0</output><button type="button" class="a" aria-label="Add one ' . esc_attr( $it['name'] ) . '">+</button></span></li>';
+		}
+		$h .= '</ul></details>';
+	}
+	$h .= '<div class="trh-b-bar" aria-live="polite"><div class="trh-b-opts"><label>People <input type="number" class="ppl" min="1" max="50" value="' . esc_attr( (int) $a['people'] ) . '"></label><label>Tax % <input type="number" class="tax" min="0" max="15" step="0.25" value="' . esc_attr( (float) $a['tax'] ) . '"></label><label>Tip % <input type="number" class="tip" min="0" max="40" step="1" value="' . esc_attr( (float) $a['tip'] ) . '"></label></div>';
+	$h .= '<div class="trh-b-sum"><span>Items <b class="cnt">0</b></span><span>Food <b class="sub">$0.00</b></span><span>Tax + tip <b class="xt">$0.00</b></span><span class="tot">Total <b class="all">$0.00</b></span><span>Per person <b class="pp">$0.00</b></span></div><button type="button" class="trh-b-reset">Clear</button></div>';
+	$h .= '<p class="trh-b-note">' . esc_html( trhpe_checked_line() ) . '. Totals are estimates — your restaurant may differ by a dollar or two. Rolls with cinnamon butter are free with every meal.</p></div>';
+	static $assets = false;
+	if ( ! $assets ) {
+		$assets = true;
+		$h .= '<style>.trh-builder{margin:1.4em 0 1.8em;border:1px solid var(--trh-line,#e7e3dc);border-radius:12px;overflow:clip;background:#fff}.trh-b-cat{border-bottom:1px solid var(--trh-line,#e7e3dc)}.trh-b-cat summary{cursor:pointer;padding:.8em 1em;font-weight:700;background:var(--trh-cream,#faf7f2)}.trh-b-cat summary span{color:var(--trh-mute,#6b6b70);font-weight:400}.trh-b-cat ul{list-style:none;margin:0;padding:0}.trh-b-cat li{display:flex;align-items:center;gap:.6em;padding:.55em 1em;border-top:1px solid var(--trh-line,#e7e3dc);margin:0}.trh-b-cat li .n{flex:1;min-width:0}.trh-b-cat li .p{font-variant-numeric:tabular-nums;color:var(--trh-mute,#6b6b70);white-space:nowrap}.trh-b-cat li .q{display:inline-flex;align-items:center;gap:.3em}.trh-b-cat li button,.trh-b-reset{width:34px;height:34px;border-radius:50%;border:1px solid var(--trh-line,#e7e3dc);background:#fff;font-size:18px;line-height:1;cursor:pointer;color:var(--trh-ink,#1d1d1f);padding:0}.trh-b-cat li button.a{background:var(--trh-red,#b5121b);border-color:var(--trh-red,#b5121b);color:#fff}.trh-b-cat li output{min-width:1.4em;text-align:center;font-weight:700}.trh-b-cat li.on{background:#fff7f0}.trh-b-bar{position:sticky;bottom:0;background:var(--trh-ink,#1d1d1f);color:#fff;padding:.8em 1em;display:flex;flex-wrap:wrap;gap:.6em 1em;align-items:center}.trh-b-opts{display:flex;gap:.6em;flex-wrap:wrap}.trh-b-opts label{font-size:.82em;display:flex;align-items:center;gap:.3em}.trh-b-opts input{width:4.2em;padding:.25em .3em;border-radius:6px;border:0;font-size:1em}.trh-b-sum{display:flex;flex-wrap:wrap;gap:.3em 1em;flex:1;font-size:.9em}.trh-b-sum b{font-variant-numeric:tabular-nums}.trh-b-sum .tot b{font-size:1.25em;color:#ffd27a}.trh-b-reset{width:auto;border-radius:6px;padding:0 .8em;height:30px;font-size:.85em}.trh-b-note{font-size:.85em;color:var(--trh-mute,#6b6b70);padding:.7em 1em;margin:0}@media print{.trh-b-bar button,.trh-b-cat li button{display:none}}</style>';
+		$h .= "<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.trh-builder').forEach(function(b){var f=function(n){return '$'+n.toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g,',');};function calc(){var c=0,s=0;b.querySelectorAll('li').forEach(function(li){var q=+li.querySelector('output').value||0;c+=q;s+=q*parseFloat(li.dataset.p);li.classList.toggle('on',q>0);});var t=+b.querySelector('.tax').value||0,p=+b.querySelector('.tip').value||0,n=Math.max(1,+b.querySelector('.ppl').value||1),x=s*t/100+s*p/100;b.querySelector('.cnt').textContent=c;b.querySelector('.sub').textContent=f(s);b.querySelector('.xt').textContent=f(x);b.querySelector('.all').textContent=f(s+x);b.querySelector('.pp').textContent=f((s+x)/n);}b.addEventListener('click',function(e){var bt=e.target.closest('button');if(!bt)return;if(bt.classList.contains('trh-b-reset')){b.querySelectorAll('output').forEach(function(o){o.value=0;});}else{var o=bt.parentNode.querySelector('output'),v=+o.value||0;o.value=Math.max(0,Math.min(99,v+(bt.classList.contains('a')?1:-1)));}calc();});b.addEventListener('input',calc);calc();});});</script>";
+	}
+	return $h;
 } );
 
 /** [trh_print label="Print or save this menu as PDF"] */
