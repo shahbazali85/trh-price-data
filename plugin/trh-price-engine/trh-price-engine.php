@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.5.0
+ * Version: 1.6.0
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.5.0' );
+define( 'TRHPE_VERSION', '1.6.0' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -59,7 +59,9 @@ function trhpe_settings() {
 		'force_draft'     => 1,
 		'speed_fonts'     => 1,   // Load only the Google Font weights the theme uses, with display=optional (stops font layout shift).
 		'speed_delay_ads' => 0,   // Load the AdSense script after first scroll/tap (or 4 s). Off by default — may change ad revenue.
-		'speed_lcp'       => 1,   // Preload the featured image on single pages/posts (faster LCP).   // Ignore the feed's publish status and always save as draft.
+		'speed_lcp'       => 1,   // Preload the featured image on single pages/posts (faster LCP).
+		'top_ad_slot'     => '',  // AdSense display ad unit ID for a fixed-size slot under the header (stops the top auto ad from pushing content = CLS).
+		'ad_client'       => 'ca-pub-2228333338546290',
 		'sheet_csv_url'   => '',  // Google Sheet "Publish to web" CSV link for the prices tab.
 		'events_csv_url'  => '',  // Optional second tab for events.
 		'max_change_pct'  => 30,  // Price moves bigger than this are held back unless force=1.
@@ -1274,6 +1276,7 @@ function trhpe_admin_page() {
 			$s['speed_fonts']     = empty( $_POST['speed_fonts'] ) ? 0 : 1;
 			$s['speed_lcp']       = empty( $_POST['speed_lcp'] ) ? 0 : 1;
 			$s['speed_delay_ads'] = empty( $_POST['speed_delay_ads'] ) ? 0 : 1;
+			$s['top_ad_slot']     = preg_replace( '/\D/', '', wp_unslash( $_POST['top_ad_slot'] ?? '' ) );
 			$s['sheet_csv_url']  = esc_url_raw( wp_unslash( $_POST['sheet_csv_url'] ?? '' ) );
 			$s['events_csv_url'] = esc_url_raw( wp_unslash( $_POST['events_csv_url'] ?? '' ) );
 			$s['max_change_pct'] = max( 5, min( 100, (int) ( $_POST['max_change_pct'] ?? 30 ) ) );
@@ -1332,6 +1335,7 @@ function trhpe_admin_page() {
 				<tr><th>Hold back price jumps over</th><td><input type="number" name="max_change_pct" value="<?php echo (int) $s['max_change_pct']; ?>" min="5" max="100">%</td></tr>
 				<tr><th>Options</th><td><label><input type="checkbox" name="menu_schema" value="1" <?php checked( $s['menu_schema'] ); ?>> Output Menu JSON-LD</label><br><label><input type="checkbox" name="touch_modified" value="1" <?php checked( $s['touch_modified'] ); ?>> Update "modified" date of pages that use the data when prices change</label></td></tr>
 				<tr><th>Speed (Core Web Vitals)</th><td><label><input type="checkbox" name="speed_fonts" value="1" <?php checked( $s['speed_fonts'] ); ?>> Lighter Google Fonts (same fonts, 4 files instead of 36, no layout shift)</label><br><label><input type="checkbox" name="speed_lcp" value="1" <?php checked( $s['speed_lcp'] ); ?>> Preload the featured image (faster LCP)</label><br><label><input type="checkbox" name="speed_delay_ads" value="1" <?php checked( $s['speed_delay_ads'] ); ?>> Start AdSense after first scroll/tap or 4 s (faster page; watch ad revenue for a week)</label></td></tr>
+				<tr><th>Top ad slot (CLS fix)</th><td><input type="text" name="top_ad_slot" value="<?php echo esc_attr( $s['top_ad_slot'] ); ?>" placeholder="e.g. 1234567890" style="width:180px"><p class="description">AdSense display ad unit ID. Shows a fixed-size ad under the header (300×250 on mobile, 728×90 on desktop) with its space reserved, so the page never jumps. Leave empty to turn off.</p></td></tr>
 			</table>
 			<?php submit_button( 'Save settings' ); ?>
 		</form>
@@ -1446,6 +1450,25 @@ add_action( 'template_redirect', function () {
 		return str_replace( '</body>', $js . '</body>', $html );
 	} );
 }, 1 );
+
+/* 11d. Top ad with reserved space: same AdSense, but the box exists before the ad loads, so nothing below it moves (CLS). */
+function trhpe_top_ad() {
+	static $done = false;
+	$s = trhpe_settings();
+	if ( $done || empty( $s['top_ad_slot'] ) || is_admin() || is_feed() || is_404() ) {
+		return;
+	}
+	$done = true;
+	echo '<div class="trh-top-ad" role="complementary" aria-label="Advertisement"><ins class="adsbygoogle trh-top-ins" data-ad-client="' . esc_attr( $s['ad_client'] ) . '" data-ad-slot="' . esc_attr( $s['top_ad_slot'] ) . '"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>';
+}
+add_action( 'generate_after_header', 'trhpe_top_ad', 5 );
+add_action( 'wp_head', function () {
+	$s = trhpe_settings();
+	if ( empty( $s['top_ad_slot'] ) ) {
+		return;
+	}
+	echo '<style id="trhpe-topad">.trh-top-ad{display:flex;justify-content:center;align-items:center;width:100%;height:266px;margin:0 auto;overflow:hidden;background:#f6f4f0;contain:layout}.trh-top-ins{display:inline-block;width:300px;height:250px}@media(min-width:769px){.trh-top-ad{height:106px}.trh-top-ins{width:728px;height:90px}}@media print{.trh-top-ad{display:none}}</style>';
+}, 3 );
 
 /* -------------------------------------------------------------------------
  * 10. Minimal front-end styles (mobile-friendly tables).
