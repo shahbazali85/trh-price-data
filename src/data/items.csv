@@ -112,7 +112,7 @@ bottled-water,Bottled Water,drinks,2.99,,,,,crosschecked,2026-10-17,"A,E",1
 half-gallon-tea-or-lemonade,Half Gallon Tea or Lemonade,drinks,3.49,,,,,crosschecked,2026-10-17,"A,B",1
 gallon-tea-or-lemonade,Gallon Tea or Lemonade,drinks,5.99,,,,,crosschecked,2026-10-17,"A,B",1
 early-dine-pulled-pork-dinner,Early Dine Pulled Pork Dinner,early-dine,9.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,"A,C",1
-early-dine-6-oz-sirloin,Early Dine 6 oz Sirloin,early-dine,10.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,"A,C",1
+early-dine-6-oz-sirloin,Early Dine 6 oz Sirloin,early-dine,10.99,12.99,,,Mon–Thu afternoons at most locations; $12.99 reported at some stores in 2026,estimate,,"A,C,F,H",1
 early-dine-grilled-bbq-chicken,Early Dine Grilled BBQ Chicken,early-dine,11.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,A,1
 early-dine-country-fried-chicken,Early Dine Country Fried Chicken,early-dine,12.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,A,1
 early-dine-country-fried-sirloin,Early Dine Country Fried Sirloin,early-dine,13.99,,,,older printed menu; Mon–Thu afternoons at most locations,estimate,,A,1
@@ -124,3 +124,4 @@ peach-margarita,Peach Margarita,margaritas,8.99,,,,from printed menus; alcohol p
 raspberry-margarita,Raspberry Margarita,margaritas,8.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
 sangria-margarita,Sangria Margarita,margaritas,9.49,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
 the-legend-margarita,The Legend Margarita,margaritas,9.99,,,,from printed menus; alcohol prices vary by state,estimate,,"A,B,D",1
+wild-west-wednesday-8-oz-sirloin,Wild West Wednesday 8 oz Sirloin,specials,10.99,14.99,,,Wednesdays at participating locations; with two sides,estimate,,"F,G",

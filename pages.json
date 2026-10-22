@@ -126,5 +126,17 @@
     "status": "publish",
     "takeover": false,
     "file": "pages/texas-roadhouse-veterans-day.html"
+  },
+  {
+    "type": "post",
+    "slug": "texas-roadhouse-wild-west-wednesday",
+    "title": "Texas Roadhouse Wild West Wednesday: 8 oz Sirloin Deal, Price & Hours",
+    "seo_title": "Texas Roadhouse Wild West Wednesday (%%currentyear%%): Price & What You Get",
+    "meta": "Wild West Wednesday at Texas Roadhouse: an 8 oz sirloin with two sides for about $10.99–$14.99 at participating restaurants. Hours, rules and how to find it.",
+    "focus": "texas roadhouse wild west wednesday",
+    "category": "Chain Update",
+    "status": "draft",
+    "takeover": false,
+    "file": "pages/texas-roadhouse-wild-west-wednesday.html"
   }
 ]

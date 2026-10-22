@@ -22,5 +22,8 @@ https://raw.githubusercontent.com/shahbazali85/trh-price-data/main/
 - **C** — menu-info.com (Oct 1, 2026)
 - **D** — usafoodjournal.com (Oct 15, 2026)
 - **E** — a delivery-app menu (item exists; delivery prices not used)
+- **F** — The Takeout, "Best deals at Texas Roadhouse" (Apr 20, 2026)
+- **G** — Chowhound, Wild West Wednesday article (Aug 17, 2025)
+- **H** — Tasting Table, Early Dine prices article (Mar 13, 2026)
 
 Only numbers are used from these sources; all page text is original.
