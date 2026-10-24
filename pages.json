@@ -24,6 +24,17 @@
   },
   {
     "type": "page",
+    "slug": "texas-roadhouse-early-dine-menu-and-hours",
+    "title": "Texas Roadhouse Early Dine Menu, Prices & Hours",
+    "seo_title": "Texas Roadhouse Early Dine Menu & Hours (October 2026 Prices)",
+    "meta": "Texas Roadhouse Early Dine runs Monday–Thursday afternoons, usually 3–6 PM. Full-size dinners with two sides from about $9.99. Menu, prices and rules.",
+    "focus": "texas roadhouse early dine",
+    "status": "publish",
+    "takeover": true,
+    "file": "pages/texas-roadhouse-early-dine-menu-and-hours.html"
+  },
+  {
+    "type": "page",
     "slug": "texas-roadhouse-family-meals",
     "title": "Texas Roadhouse Family Meals: Prices, What's Included & How to Order",
     "seo_title": "Texas Roadhouse Family Meals (October 2026): Prices & What's Included",
@@ -135,7 +146,7 @@
     "meta": "Wild West Wednesday at Texas Roadhouse: an 8 oz sirloin with two sides for about $10.99–$14.99 at participating restaurants. Hours, rules and how to find it.",
     "focus": "texas roadhouse wild west wednesday",
     "category": "Chain Update",
-    "status": "draft",
+    "status": "publish",
     "takeover": false,
     "file": "pages/texas-roadhouse-wild-west-wednesday.html"
   }
