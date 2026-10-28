@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.7.1
+ * Version: 1.7.2
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.7.1' );
+define( 'TRHPE_VERSION', '1.7.2' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -207,7 +207,7 @@ function trhpe_import_items( array $rows, $source = 'manual' ) {
 			$meta['last_verified'] = max( $dates );
 		}
 		update_option( TRHPE_OPT_META, $meta, false );
-		trhpe_after_data_change();
+		trhpe_after_data_change( ! empty( $report['changes'] ) || $report['added'] > 0 );
 	}
 	trhpe_log( sprintf( '[%s] items: +%d added, %d changed, %d unchanged, %d held, %d errors', $source, $report['added'], $report['changed'], $report['unchanged'], count( $report['held'] ), count( $report['errors'] ) ) );
 	return $report;
@@ -814,9 +814,10 @@ add_action( 'wp_footer', function () {
 /* -------------------------------------------------------------------------
  * 6. AFTER A DATA CHANGE — honest modified dates + cache purge.
  * ---------------------------------------------------------------------- */
-function trhpe_after_data_change() {
+function trhpe_after_data_change( $prices_changed = false ) {
 	$s = trhpe_settings();
-	if ( ! empty( $s['touch_modified'] ) ) {
+	// Only real price changes bump the "modified" date of pages that show prices (no fake freshness).
+	if ( $prices_changed && ! empty( $s['touch_modified'] ) ) {
 		global $wpdb;
 		$ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_status='publish' AND post_type IN ('post','page') AND post_content LIKE '%[trh\\_%'" ); // phpcs:ignore
 		$now = current_time( 'mysql' );
