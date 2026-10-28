@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.7.0
+ * Version: 1.7.1
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.7.0' );
+define( 'TRHPE_VERSION', '1.7.1' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -632,7 +632,17 @@ add_shortcode( 'trh_badge', function () {
 	$post   = get_post();
 	$prices = $post && preg_match( '/\[trh_(table|price|range)\b/', $post->post_content );
 	if ( $prices ) {
-		$text = trhpe_checked_line();
+		// Show the page's own update date when it is newer than the last price check, so a freshly
+		// rewritten page doesn't look stale — but never pretend prices were re-checked when they weren't.
+		$meta = trhpe_meta();
+		$vd   = $meta['last_verified'] ? $meta['last_verified'] : $meta['last_import'];
+		$md   = $post ? get_post_modified_time( 'Y-m-d', false, $post ) : '';
+		$pc   = $vd ? wp_date( 'M j, Y', strtotime( $vd . ' 12:00:00' ) ) : '';
+		if ( $md && $vd && $md > $vd ) {
+			$text = 'Updated ' . get_the_modified_date( 'M j, Y', $post ) . ' · prices checked ' . $pc . ' · may vary by location';
+		} else {
+			$text = $pc ? 'Typical U.S. prices · checked ' . $pc . ' · may vary by location' : trhpe_checked_line();
+		}
 	} else {
 		$d    = $post ? get_the_modified_date( 'M j, Y', $post ) : '';
 		$text = $d ? 'Checked and updated ' . $d : 'Checked and updated regularly';
