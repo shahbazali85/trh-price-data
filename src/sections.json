@@ -20,5 +20,33 @@
     "id": "seo-allergens",
     "slug": "texas-roadhouse-allergens-menu",
     "meta": "Texas Roadhouse allergen guide: items with milk, egg, wheat, soy, fish or shellfish, plus dairy-free and gluten-friendly picks. Confirm with your server."
+  },
+  {
+    "id": "specials-month",
+    "slug": "texas-roadhouse-specials",
+    "title": "Texas Roadhouse Specials Today: Every Deal, Day by Day",
+    "seo_title": "Texas Roadhouse Specials Today (%%currentmonth%% %%currentyear%%): Every Deal",
+    "replace": [
+      [
+        "(October 2026)",
+        "([trh_updated format=\"F Y\"])"
+      ],
+      [
+        "In October 2026,",
+        "In [trh_updated format=\"F Y\"],"
+      ],
+      [
+        "in October 2026,",
+        "in [trh_updated format=\"F Y\"],"
+      ],
+      [
+        "Last updated: October 1, 2026",
+        "Prices last checked: [trh_updated]"
+      ],
+      [
+        "Specials: October",
+        "Specials: November"
+      ]
+    ]
   }
 ]

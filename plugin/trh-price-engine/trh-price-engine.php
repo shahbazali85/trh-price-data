@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TRH Price Engine
  * Description: One place for every price, calorie count, holiday date and event on the site. Edit a Google Sheet (or upload a CSV) and every page updates itself — no copy-paste. Adds shortcodes, auto holiday dates, Yoast variables, Menu JSON-LD and honest "last updated" dates.
- * Version: 1.7.2
+ * Version: 1.8.0
  * Author: Desire Web Solution
  * Requires PHP: 7.4
  * License: GPLv2 or later
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRHPE_VERSION', '1.7.2' );
+define( 'TRHPE_VERSION', '1.8.0' );
 define( 'TRHPE_OPT_ITEMS', 'trhpe_items' );
 define( 'TRHPE_OPT_META', 'trhpe_meta' );
 define( 'TRHPE_OPT_HOLIDAYS', 'trhpe_holidays' );
@@ -1015,7 +1015,7 @@ function trhpe_sync_sections_feed() {
 	$report = array();
 	foreach ( (array) $list as $row ) {
 		// SEO-only row: { "id", "slug", "seo_title"?, "meta"? } — updates Yoast fields of an existing page.
-		if ( ! empty( $row['id'] ) && ! empty( $row['slug'] ) && empty( $row['file'] ) && ( ! empty( $row['seo_title'] ) || ! empty( $row['meta'] ) ) ) {
+		if ( ! empty( $row['id'] ) && ! empty( $row['slug'] ) && empty( $row['file'] ) && ( ! empty( $row['seo_title'] ) || ! empty( $row['meta'] ) || ! empty( $row['title'] ) || ! empty( $row['replace'] ) ) ) {
 			$posts = get_posts( array( 'name' => sanitize_title( $row['slug'] ), 'post_type' => array( 'page', 'post' ), 'post_status' => 'publish', 'numberposts' => 1 ) );
 			if ( ! $posts ) {
 				continue;
@@ -1031,8 +1031,28 @@ function trhpe_sync_sections_feed() {
 			if ( ! empty( $row['meta'] ) ) {
 				update_post_meta( $posts[0]->ID, '_yoast_wpseo_metadesc', sanitize_text_field( $row['meta'] ) );
 			}
+			// Optional small text fixes on an owner page: new post title (H1) and exact find→replace pairs.
+			$upd = array();
+			if ( ! empty( $row['title'] ) ) {
+				$upd['post_title'] = sanitize_text_field( $row['title'] );
+			}
+			if ( ! empty( $row['replace'] ) && is_array( $row['replace'] ) ) {
+				$c = $posts[0]->post_content;
+				foreach ( $row['replace'] as $pair ) {
+					if ( is_array( $pair ) && 2 === count( $pair ) && '' !== (string) $pair[0] ) {
+						$c = str_replace( (string) $pair[0], wp_kses_post( (string) $pair[1] ), $c );
+					}
+				}
+				if ( $c !== $posts[0]->post_content ) {
+					$upd['post_content'] = $c;
+				}
+			}
+			if ( $upd ) {
+				$upd['ID'] = $posts[0]->ID;
+				wp_update_post( wp_slash( $upd ) ); // old version stays in Revisions.
+			}
 			update_post_meta( $posts[0]->ID, $key, $hash );
-			$report[] = $row['id'] . ': SEO title/meta updated on /' . $posts[0]->post_name . '/';
+			$report[] = $row['id'] . ': SEO/title/text updated on /' . $posts[0]->post_name . '/';
 			continue;
 		}
 		if ( empty( $row['id'] ) || empty( $row['slug'] ) || empty( $row['heading'] ) || empty( $row['file'] ) || false !== strpos( $row['file'], '..' ) ) {
