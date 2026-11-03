@@ -82,5 +82,15 @@
         "Texas Roadhouse reports Q3 2026 results on November 5, when it usually confirms its fall price change. See our <a href=\"/texas-roadhouse-price-increase/\">Texas Roadhouse price increase guide</a>."
       ]
     ]
+  },
+  {
+    "id": "lunch-hours-fix",
+    "slug": "texas-roadhouse-lunch-menu",
+    "replace": [
+      [
+        "6:00 PM</td>",
+        "6:00 PM (Early Dine; most stores open at 3 or 4 PM on weekdays, so no weekday lunch)</td>"
+      ]
+    ]
   }
 ]
