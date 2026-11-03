@@ -52,5 +52,35 @@
         "<strong>Prices last checked:</strong> [trh_updated]"
       ]
     ]
+  },
+  {
+    "id": "specials-facts-nov",
+    "slug": "texas-roadhouse-specials",
+    "replace": [
+      [
+        "Annual tradition. 2026 details pending.",
+        "Confirmed for 2026: vouchers handed out Wednesday, Nov 11, 11 AM–2 PM; redeem through May 31, 2027."
+      ],
+      [
+        "Many stores close on Thanksgiving Day.",
+        "All restaurants are closed on Thanksgiving Day."
+      ],
+      [
+        "You get smaller portions of popular entrées, and each one",
+        "You get popular full-size entrées at a lower price, and each one"
+      ],
+      [
+        "no chain-wide everyday military discount. Some restaurants offer one",
+        "no chain-wide military discount, but many restaurants offer about 10% off with ID"
+      ],
+      [
+        "Most stores give about 10% off every day.",
+        "Many stores give about 10% off; ask yours."
+      ],
+      [
+        "So expect a small bump on some specials this fall.",
+        "Texas Roadhouse reports Q3 2026 results on November 5, when it usually confirms its fall price change. See our <a href=\"/texas-roadhouse-price-increase/\">Texas Roadhouse price increase guide</a>."
+      ]
+    ]
   }
 ]
