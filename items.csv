@@ -1,14 +1,14 @@
 id,name,category,price,price_max,calories,serves,note,status,verified_on,sources,force
 cactus-blossom,Cactus Blossom,appetizers,8.99,,"2,250",,typical range $7.99–$11.99,crosschecked,2026-11-02,"A,B,C,D",1
 fried-pickles,Fried Pickles,appetizers,7.99,,550,,typical range $6.99–$10.99,crosschecked,2026-11-02,"A,B,D",1
-rattlesnake-bites,Rattlesnake Bites,appetizers,8.49,,560,,,estimate,,"B,D",1
-tater-skins,Tater Skins,appetizers,8.99,,"1,320",,,crosschecked,2026-10-17,"B,D",1
+rattlesnake-bites,Rattlesnake Bites,appetizers,8.99,,560,,typical range $7.99–$11.99,crosschecked,2026-11-06,"A,B,D",1
+tater-skins,Tater Skins,appetizers,9.99,,"1,320",,typical range $5.99–$11.99,crosschecked,2026-11-06,"A,B,D",1
 grilled-shrimp-appetizer,Grilled Shrimp Appetizer,appetizers,7.99,,370,,typical range $7.99–$8.49,crosschecked,2026-11-02,"A,B",1
 boneless-buffalo-wings,Boneless Buffalo Wings,appetizers,11.99,,760–860,,typical range $9.99–$12.99,crosschecked,2026-11-02,"A,B,D",1
 cheese-fries,Cheese Fries,appetizers,10.99,,"1,240",,typical range $9.49–$12.99,crosschecked,2026-11-02,"A,B",1
 killer-ribs,Killer Ribs,appetizers,13.49,,910,,typical range $7.99–$14.99,crosschecked,2026-11-02,"A,B",1
 combo-appetizer,Combo Appetizer,appetizers,13.99,,,,typical range $12.99–$15.99,crosschecked,2026-11-02,"A,B",1
-twisted-mozzarella,Twisted Mozzarella,appetizers,7.99,,710,,,estimate,,B,1
+twisted-mozzarella,Twisted Mozzarella,appetizers,8.49,,710,,typical range $7.49–$10.99,crosschecked,2026-11-06,"A,B",1
 deviled-eggs,Deviled Eggs,appetizers,7.49,,520,,typical range $7.49–$7.99; not at every location,crosschecked,2026-11-02,"A,B",1
 texas-red-chili-cup,Texas Red Chili (cup),appetizers,4.99,,210–250,,,crosschecked,2026-10-17,"B,C,D",1
 hand-cut-sirloin-6-oz,Hand-Cut Sirloin (6 oz),steaks,14.49,,250,,typical range $14.49–$15.99; starting price; larger cuts cost more,crosschecked,2026-11-02,"A,C",1
@@ -18,9 +18,9 @@ ft-worth-ribeye,Ft. Worth Ribeye,steaks,24.99,,960,,typical range $22.99–$28.9
 bone-in-ribeye,Bone-In Ribeye,steaks,32.99,,"1,480",,typical range $29.99–$38.99,crosschecked,2026-11-02,"A,B",1
 porterhouse-t-bone,Porterhouse T-Bone,steaks,35.99,,"1,040",,typical range $33.99–$40.99,crosschecked,2026-11-02,"A,B,C",1
 filet-medallions,Filet Medallions,steaks,24.99,,760,,typical range $22.99–$29.99,crosschecked,2026-11-02,"A,B",1
-prime-rib,Prime Rib,steaks,24.49,29.49,"950–1,260",,weekends at many locations; may sell out,estimate,,"B,D",1
+prime-rib,Prime Rib,steaks,25.99,,"950–1,260",,typical range $24.49–$29.49; weekends at many locations; may sell out,crosschecked,2026-11-06,"A,B,D",1
 road-kill,Road Kill,steaks,13.49,,760,,,crosschecked,2026-10-17,"B,D",1
-steak-kabob,Steak Kabob,steaks,15.49,,920,,,estimate,,B,1
+steak-kabob,Steak Kabob,steaks,15.99,,920,,typical range $14.99–$18.99,crosschecked,2026-11-06,"A,B",1
 half-slab-ribs,Half Slab Ribs,ribs,19.99,,900,,typical range $18.49–$21.99,crosschecked,2026-11-02,"A,B,D",1
 full-slab-ribs,Full Slab Ribs,ribs,25.99,,"1,450",,typical range $23.99–$27.99,crosschecked,2026-11-02,"A,B,C",1
 grilled-bbq-chicken-and-ribs,Grilled BBQ Chicken & Ribs,combos,23.49,,890,,typical range $19.99–$24.99,crosschecked,2026-11-02,"A,B,D",1
@@ -53,7 +53,7 @@ beef-tips,Beef Tips,country-dinners,17.49,,"960–1,060",,typical range $15.99�
 country-vegetable-plate,Country Vegetable Plate,country-dinners,12.99,,,,typical range $11.99–$14.99,crosschecked,2026-11-02,"A,B",1
 all-american-cheeseburger,All-American Cheeseburger,burgers-sandwiches,12.49,,880,,,crosschecked,2026-11-02,"A,B",1
 bacon-cheeseburger,Bacon Cheeseburger,burgers-sandwiches,13.99,,980,,typical range $12.99–$16.99,crosschecked,2026-11-02,"A,B",1
-smokehouse-burger,Smokehouse Burger,burgers-sandwiches,13.99,,"1,080",,,estimate,,B,1
+smokehouse-burger,Smokehouse Burger,burgers-sandwiches,14.49,,"1,080",,typical range $13.49–$16.99,crosschecked,2026-11-06,"A,B",1
 grilled-or-fried-chicken-sandwich,Grilled or Fried Chicken Sandwich,burgers-sandwiches,13.49,,560–830,,,crosschecked,2026-11-02,"A,E",1
 bbq-chicken-sandwich,BBQ Chicken Sandwich,burgers-sandwiches,13.49,,640,,,crosschecked,2026-11-02,"A,B",1
 mushroom-jack-chicken-sandwich,Mushroom Jack Chicken Sandwich,burgers-sandwiches,14.49,,710,,typical range $13.49–$16.99,crosschecked,2026-11-02,"A,B",1
