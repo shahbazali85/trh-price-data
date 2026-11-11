@@ -12,6 +12,10 @@ root = pathlib.Path(__file__).resolve().parent.parent
 out = pathlib.Path(a.out); (out / "pages").mkdir(parents=True, exist_ok=True)
 
 items = list(csv.DictReader(open(root / "data/items.csv", encoding="utf-8")))
+_rows = list(csv.reader(open(root / "data/items.csv", encoding="utf-8")))
+_bad = [r[0] for r in _rows[1:] if len(r) != len(_rows[0])]
+if _bad:
+    sys.exit("items.csv: wrong number of columns (unquoted comma?) in: " + ", ".join(_bad))
 def rng(cat):
     ps = [float(i["price"]) for i in items if i["category"] == cat] + [float(i["price_max"]) for i in items if i["category"] == cat and i["price_max"]]
     return f"${min(ps):.2f}–${max(ps):.2f}"
