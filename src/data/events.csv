@@ -12,7 +12,7 @@ labor-day,Labor Day,nth:1:mon:9,Open — hours may differ from a normal Monday,,
 halloween,Halloween,fixed:10-31,Open — regular hours,,,,
 veterans-day,Veterans Day,fixed:11-11,Open,Free meal voucher for veterans & active-duty military,"2026 terms confirmed: vouchers handed out Wednesday, Nov 11, 11 AM–2 PM at every Texas Roadhouse with proof of service (military ID, VA card or discharge papers); redeem through May 31, 2027.",https://www.fsrmagazine.com/industry-news/texas-roadhouse-to-offer-free-meal-vouchers-to-veterans-and-active-duty-military/,yes
 thanksgiving,Thanksgiving Day,nth:4:thu:11,Closed,,,,
-black-friday,Black Friday,nth:4:thu:11+1,Open — regular hours,Holiday gift card bonus (check current terms),,,no
+black-friday,Black Friday,nth:4:thu:11+1,Open — regular hours,Holiday gift card bonus: $5 per $30 reported through Dec 30 (check at checkout),,,no
 christmas-eve,Christmas Eve,fixed:12-24,Open — many locations close early,,,,
 christmas-day,Christmas Day,fixed:12-25,Closed,,,,
 new-years-eve,New Year's Eve,fixed:12-31,Open — hours may be shorter,,,,
