@@ -21,14 +21,17 @@ This repo is the data feed for **texasroadhouseusamenu.com** (owner: Shahbaz Ali
 
 ## Content rules
 - Meta descriptions must be 70–158 characters (the build refuses longer ones; Bing flags >160).
-- Few, useful pages (2–4 a month max). Each answers a real search question, starts with a 40–60 word direct answer, links official/news sources, and says it's an independent guide.
+- Few, useful pages (2–4 a month max). After the Nov 2026 core update: no new page if an existing page already answers the query (Google picked the Hours page over the Thanksgiving/Christmas pages and the homepage over the Steak page). Consolidate instead, with a 301 in redirects.json.
+- Never claim first-hand visits, receipts or personal experience the site does not have.
+- Each page answers a real search question, starts with a 40–60 word direct answer, links official/news sources, and says it's an independent guide.
 - Never claim an offer is confirmed for this year without an official or news source dated this year. Use [trh_event] — it shows "not yet confirmed" until `confirmed = yes`.
 - Evergreen slugs without years. In seo_title/meta use Yoast's native %%currentyear%% for the year (the editor preview understands it). %%trh_month_year%% is replaced at build time with the verified month. Never leave %%trh_...%% in pages.json.
 - `takeover: true` lets a page overwrite an existing page the owner wrote (only works if the owner enabled it). Use only for full, better rewrites.
 
 ## Page design (keep every page consistent)
 - Add `google-anno-skip` to the answer, sources and hand-made table classes (as below) so AdSense "Ad intents" links/chips stay out of key content.
-- Start the body with `[trh_badge]` in a wp:shortcode block, then the quick answer as `<!-- wp:paragraph {"className":"trh-answer google-anno-skip"} --><p class="trh-answer google-anno-skip"><strong>Quick answer:</strong> …</p>`.
+- Start the body with `[trh_badge]` in a wp:shortcode block, then a direct, natural answer paragraph as `<!-- wp:paragraph {"className":"trh-answer google-anno-skip"} --><p class="trh-answer google-anno-skip">…</p>` (no "Quick answer:" label — it made every page look templated).
+- Tables always get `footer="0"` (the badge at the top already says where prices come from; repeating it under every table is boilerplate).
 - Prices only via `[trh_table]` / `[trh_price]` / `[trh_range]`; holidays via `[trh_holiday_table]`; offers via `[trh_event]`.
 - Hand-made tables: `<!-- wp:table {"className":"trh-core google-anno-skip"} -->` + `<figure class="wp-block-table trh-core google-anno-skip">` (styled + protected from widget injection).
 - End with the sources paragraph: `<!-- wp:paragraph {"className":"trh-sources google-anno-skip"} --><p class="trh-sources google-anno-skip">Sources: … Independent guide — not affiliated with Texas Roadhouse.</p>`.

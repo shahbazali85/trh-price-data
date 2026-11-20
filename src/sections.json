@@ -94,12 +94,36 @@
     ]
   },
   {
-    "id": "about-publisher-fix",
+    "id": "about-honest",
     "slug": "about",
     "replace": [
       [
         "written and edited by Justin Samuel and published by [Publisher / company name].",
         "written and edited by Justin Samuel."
+      ],
+      [
+        "<p>I've spent years reading restaurant menus, writing food reviews and helping people work out what's really worth ordering, especially at steakhouse chains like Texas Roadhouse. The official website doesn't list prices,",
+        "<p>Texas Roadhouse is one of the most popular steakhouse chains in the U.S., but its official website doesn't list prices,"
+      ],
+      [
+        "written by someone who eats there and pays attention to the details.</p>",
+        "checked against several sources and kept up to date.</p>"
+      ],
+      [
+        "<h2 id=\"h-my-experience-with-texas-roadhouse\" class=\"wp-block-heading\">My Experience with Texas Roadhouse</h2>",
+        "<h2 id=\"h-my-experience-with-texas-roadhouse\" class=\"wp-block-heading\">What This Site Does Differently</h2>"
+      ],
+      [
+        "<p>This guide is built on research and first-hand experience. I visit Texas Roadhouse regularly, explore the full menu, and keep track of price changes, portion sizes, seasonal deals and calories.</p>",
+        "<p>Instead of copying one old menu, every price here is compared across several independent price trackers, including one that samples online-ordering menus at hundreds of Texas Roadhouse restaurants. Calories come from the official Texas Roadhouse nutrition menu, and deals are only listed as confirmed when Texas Roadhouse or a news outlet has announced them.</p>"
+      ],
+      [
+        "<p>I know what Early Dine actually includes, which combos give you the most value, and how to avoid surprises when the check comes.</p>",
+        "<p>Each page also tries to answer the practical question behind a search: what a meal for your family will cost, when Early Dine runs, which days the restaurants are closed, and which deals are real.</p>"
+      ],
+      [
+        "Prices and deals are reviewed monthly against Texas Roadhouse's official website and VIP Club terms, the company's quarterly earnings reports, and recent coverage from trusted food and deals publications. These are combined with my own visits and receipts.</p>",
+        "Prices are compared monthly across independent price trackers and online-ordering menus. Deals are checked against Texas Roadhouse's own announcements and VIP Club terms, the company's quarterly earnings reports, and recent coverage from food and news publications.</p>"
       ]
     ]
   }

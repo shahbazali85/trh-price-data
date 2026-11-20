@@ -1,4 +1,7 @@
 [
-  { "from": "/texas-roadhouse-1-5b-sales-record/", "to": "/texas-roadhouse-price-increase/" },
-  { "from": "/texas-roadhouse-labor-day-2025-hours-specials/", "to": "/texas-roadhouse-labor-day/" }
+  {"from": "/texas-roadhouse-1-5b-sales-record/", "to": "/texas-roadhouse-price-increase/"},
+  {"from": "/texas-roadhouse-labor-day-2025-hours-specials/", "to": "/texas-roadhouse-hours/"},
+  {"from": "/texas-roadhouse-labor-day/", "to": "/texas-roadhouse-hours/"},
+  {"from": "/texas-roadhouse-thanksgiving/", "to": "/texas-roadhouse-hours/"},
+  {"from": "/texas-roadhouse-christmas/", "to": "/texas-roadhouse-hours/"}
 ]
