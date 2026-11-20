@@ -92,5 +92,15 @@
         "6:00 PM (Early Dine; most stores open at 3 or 4 PM on weekdays, so no weekday lunch)</td>"
       ]
     ]
+  },
+  {
+    "id": "about-publisher-fix",
+    "slug": "about",
+    "replace": [
+      [
+        "written and edited by Justin Samuel and published by [Publisher / company name].",
+        "written and edited by Justin Samuel."
+      ]
+    ]
   }
 ]
