@@ -25,5 +25,6 @@ https://raw.githubusercontent.com/shahbazali85/trh-price-data/main/
 - **F** — The Takeout, "Best deals at Texas Roadhouse" (Apr 20, 2026)
 - **G** — Chowhound, Wild West Wednesday article (Aug 17, 2025)
 - **H** — Tasting Table, Early Dine prices article (Mar 13, 2026)
+- **O** — official texasroadhouse.com online-ordering menus, read directly for 7 restaurants (Madison Heights MI, West Dallas TX, Orlando FL, Grove City OH, Elk Grove CA, Phoenix AZ, Albany NY) on Nov 25, 2026. `price` = median of the 7; the note gives the low–high range. Preferred source from now on.
 
 Only numbers are used from these sources; all page text is original.

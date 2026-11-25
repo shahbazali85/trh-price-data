@@ -6,7 +6,7 @@ import argparse, csv, json, pathlib, shutil, sys
 
 ap = argparse.ArgumentParser()
 ap.add_argument("out"); ap.add_argument("--verified", required=True)
-ap.add_argument("--stores", default="Cross-checked against several independent price trackers, including one that samples online-ordering menus at 614 restaurants in 47 states")
+ap.add_argument("--stores", default="Read from the official Texas Roadhouse online-ordering menus of 7 restaurants in 7 states (MI, TX, FL, OH, CA, AZ, NY)")
 a = ap.parse_args()
 root = pathlib.Path(__file__).resolve().parent.parent
 out = pathlib.Path(a.out); (out / "pages").mkdir(parents=True, exist_ok=True)
